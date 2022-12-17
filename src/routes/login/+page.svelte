@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from "$app/forms";
+	import { goto } from "$app/navigation";
 	import { supabaseClient } from "$lib/supabase";
 	import { AuthApiError } from "@supabase/supabase-js";
-	import { redirect } from "@sveltejs/kit";
 
 	export let error: string = "";
 
@@ -13,14 +13,16 @@
 			password: body.password as string
 		});
 
+		cancel();
+
 		if (err) {
 			error =
 				err instanceof AuthApiError && err.status === 400
 					? "Wrong credentials"
 					: "Server error. Try again later.";
+		} else {
+			goto("/");
 		}
-
-		redirect(303, "/");
 	};
 </script>
 
