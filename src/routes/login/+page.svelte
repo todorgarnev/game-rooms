@@ -26,19 +26,21 @@
 	};
 </script>
 
-<main>
-	<h1>Login</h1>
-	<form action="?/login" method="POST" class="auth-form" use:enhance={submitLogin}>
+<h1>Login</h1>
+<form action="?/login" method="POST" class="auth-form" use:enhance={submitLogin}>
+	<div class="input-container">
 		<label for="email"> Email </label>
 		<input type="text" name="email" />
+	</div>
 
+	<div class="input-container">
 		<label for="password"> Password </label>
 		<input type="password" name="password" />
+	</div>
 
-		{#if error}
-			<p>{error}</p>
-		{/if}
+	{#if error}
+		<p class="error">{error}</p>
+	{/if}
 
-		<button type="submit" class="btn btn-primary">Login</button>
-	</form>
-</main>
+	<button type="submit" class="btn btn-primary">Login</button>
+</form>
