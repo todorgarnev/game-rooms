@@ -108,7 +108,7 @@
 	:global(.error) {
 		margin-bottom: 2rem;
 		font-size: 1.2rem;
-		color: red;
+		color: var(--error);
 	}
 
 	main {
