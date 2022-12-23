@@ -27,14 +27,14 @@
 </script>
 
 <h1>Login</h1>
-<form action="?/login" method="POST" class="auth-form" use:enhance={submitLogin}>
+<form action="?/login" method="POST" class="auth-form">
 	<div class="input-container">
-		<label for="email"> Email </label>
+		<label for="email">Email</label>
 		<input type="text" name="email" />
 	</div>
 
 	<div class="input-container">
-		<label for="password"> Password </label>
+		<label for="password">Passwords</label>
 		<input type="password" name="password" />
 	</div>
 

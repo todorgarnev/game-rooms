@@ -3,7 +3,9 @@
 	import { goto } from "$app/navigation";
 	import { supabaseClient } from "$lib/supabase";
 	import { AuthApiError } from "@supabase/supabase-js";
+	import type { ActionData } from "./$types";
 
+	export let form: ActionData;
 	export let error: string = "";
 
 	const submitRegister: SubmitFunction = async ({ data, cancel }) => {
@@ -27,20 +29,55 @@
 </script>
 
 <h1>Register</h1>
-<form action="?/register" method="POST" class="auth-form" use:enhance={submitRegister}>
+<form action="?/register" method="POST" class="auth-form">
 	<div class="input-container">
-		<label for="email"> Email </label>
-		<input type="text" name="email" />
+		<label for="email">Email</label>
+
+		<input
+			class={form?.errors?.email ? "input-error" : ""}
+			type="text"
+			name="email"
+			value={form?.data.email ?? ""}
+		/>
+
+		{#if form?.errors?.email}
+			<span class="error">{form.errors.email[0]}</span>
+		{/if}
 	</div>
 
 	<div class="input-container">
-		<label for="password"> Password </label>
-		<input type="password" name="password" />
+		<label for="password">Password</label>
+
+		<input
+			class={form?.errors?.email ? "input-error" : ""}
+			type="password"
+			name="password"
+			value={form?.data.password ?? ""}
+		/>
+
+		{#if form?.errors?.password}
+			<span class="error">{form.errors.password[0]}</span>
+		{/if}
+	</div>
+
+	<div class="input-container">
+		<label for="confirmPassword">Confirm Password</label>
+
+		<input
+			class={form?.errors?.email ? "input-error" : ""}
+			type="password"
+			name="confirmPassword"
+			value={form?.data.confirmPassword ?? ""}
+		/>
+
+		{#if form?.errors?.confirmPassword}
+			<span class="error">{form.errors.confirmPassword[0]}</span>
+		{/if}
 	</div>
 
 	{#if error}
-	<p class="error">{error}</p>
-{/if}
+		<p class="error">{error}</p>
+	{/if}
 
 	<button class="btn btn-primary">Register</button>
 </form>
