@@ -30,7 +30,7 @@
 	</div>
 {/if}
 
-<style lang="scss">
+<style lang="postcss">
 	.welcome {
 		margin-bottom: 3rem;
 	}

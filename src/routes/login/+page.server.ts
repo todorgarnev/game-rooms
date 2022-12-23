@@ -1,6 +1,6 @@
 import { AuthApiError } from "@supabase/supabase-js";
 import { fail, redirect } from "@sveltejs/kit";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load = (async ({ locals }) => {
@@ -28,28 +28,31 @@ export const actions: Actions = {
 
 		try {
 			const results = loginSchema.parse(body);
-			console.log("results: ", results);
-		} catch (error) {
-			console.log("error: ", error);
+			const { error: err } = await locals.sb.auth.signInWithPassword({
+				email: body.email as string,
+				password: body.password as string
+			});
+
+			if (err) {
+				if (err instanceof AuthApiError && err.status === 400) {
+					return fail(400, {
+						error: "Wrong credentials"
+					});
+				}
+
+				return fail(500, {
+					error: "Server error. Try again later."
+				});
+			}
+
+			throw redirect(303, "/");
+		} catch (err) {
+			const { fieldErrors: errors } = (err as ZodError).flatten();
+
+			return fail(400, {
+				data: { email: body.email },
+				errors
+			});
 		}
-
-		// const { error: err } = await locals.sb.auth.signInWithPassword({
-		// 	email: body.email as string,
-		// 	password: body.password as string
-		// });
-
-		// if (err) {
-		// 	if (err instanceof AuthApiError && err.status === 400) {
-		// 		return fail(400, {
-		// 			error: "Wrong credentials"
-		// 		});
-		// 	}
-
-		// 	return fail(500, {
-		// 		error: "Server error. Try again later."
-		// 	});
-		// }
-
-		// throw redirect(303, "/");
 	}
 };

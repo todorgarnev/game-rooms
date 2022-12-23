@@ -2,6 +2,7 @@
 	import { onMount } from "svelte";
 	import { invalidateAll } from "$app/navigation";
 	import { supabaseClient } from "$lib/supabase";
+	import "$lib/styles/global.postcss";
 
 	onMount(() => {
 		const {
@@ -20,7 +21,7 @@
 	<slot />
 </main>
 
-<style lang="scss">
+<style lang="postcss">
 	main {
 		padding: 3.6rem;
 		text-align: center;
