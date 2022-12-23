@@ -11,12 +11,12 @@ export const load = (async ({ locals }) => {
 
 const loginSchema = z.object({
 	email: z
-		.string({ required_error: "Email is required" })
+		.string()
 		.min(1, { message: "Email is required" })
 		.max(64, { message: "Email must be less than 64 character" })
 		.email(),
 	password: z
-		.string({ required_error: "Password is required" })
+		.string()
 		.min(6, { message: "Password must be at least 6 characters" })
 		.max(32, "Password must be less than 32 character")
 		.trim()
@@ -27,7 +27,8 @@ export const actions: Actions = {
 		const body = Object.fromEntries(await request.formData());
 
 		try {
-			const results = loginSchema.parse(body);
+			loginSchema.parse(body);
+
 			const { error: err } = await locals.sb.auth.signInWithPassword({
 				email: body.email as string,
 				password: body.password as string
@@ -44,8 +45,6 @@ export const actions: Actions = {
 					error: "Server error. Try again later."
 				});
 			}
-
-			throw redirect(303, "/");
 		} catch (err) {
 			const { fieldErrors: errors } = (err as ZodError).flatten();
 
@@ -54,5 +53,7 @@ export const actions: Actions = {
 				errors
 			});
 		}
+
+		throw redirect(303, "/");
 	}
 };

@@ -65,8 +65,6 @@ export const actions: Actions = {
 					error: "Server error. Please try again later."
 				});
 			}
-
-			throw redirect(303, "/");
 		} catch (err) {
 			const { fieldErrors: errors } = (err as ZodError).flatten();
 
@@ -75,5 +73,7 @@ export const actions: Actions = {
 				errors
 			});
 		}
+
+		throw redirect(303, "/login");
 	}
 };
