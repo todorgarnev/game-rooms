@@ -4,6 +4,7 @@
 	import { supabaseClient } from "$lib/supabase/supabase";
 	import { roomName } from "$lib/stores/notification";
 	import Notification from "$lib/components/Notification.svelte";
+	import Navigation from "$lib/components/Navigation.svelte";
 	import type { PageData } from "./$types";
 	import "$lib/styles/global.postcss";
 
@@ -32,9 +33,11 @@
 	});
 </script>
 
+<Navigation isLoggedIn={!!data.session?.user} />
+
 <main>
-	<Notification />
 	<slot />
+	<Notification />
 </main>
 
 <style lang="postcss">
