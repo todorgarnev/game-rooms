@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from "$app/forms";
-	import { supabaseClient } from "$lib/supabase";
+	import { supabaseClient } from "$lib/supabase/supabase";
 	import type { PageData } from "./$types";
 
 	export let data: PageData;

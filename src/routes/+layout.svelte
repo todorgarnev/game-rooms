@@ -1,8 +1,13 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { invalidateAll } from "$app/navigation";
-	import { supabaseClient } from "$lib/supabase";
+	import { supabaseClient } from "$lib/supabase/supabase";
+	import { roomName } from "$lib/stores/notification";
+	import Notification from "$lib/components/Notification.svelte";
+	import type { PageData } from "./$types";
 	import "$lib/styles/global.postcss";
+
+	export let data: PageData;
 
 	onMount(() => {
 		const {
@@ -13,8 +18,10 @@
 
 		const sb = supabaseClient
 			.channel("public:rooms")
-			.on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, (payload) => {
-				console.log("Change received!", payload);
+			.on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, (payload: any) => {
+				if (!payload.new?.user?.includes(data.session?.user.id)) {
+					roomName.set(payload.new.name || "");
+				}
 			})
 			.subscribe();
 
@@ -26,6 +33,7 @@
 </script>
 
 <main>
+	<Notification />
 	<slot />
 </main>
 
