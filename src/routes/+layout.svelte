@@ -19,7 +19,7 @@
 		const sb = supabaseClient
 			.channel("public:rooms")
 			.on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, (payload: any) => {
-				if (!payload.new?.user?.includes(data.session?.user.id)) {
+				if (!payload.new?.users?.includes(data.session?.user.id) ) {
 					roomName.set(payload.new.name || "");
 				}
 			})
