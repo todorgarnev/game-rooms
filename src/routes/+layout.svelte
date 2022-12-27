@@ -11,7 +11,15 @@
 			invalidateAll();
 		});
 
+		const sb = supabaseClient
+			.channel("public:rooms")
+			.on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, (payload) => {
+				console.log("Change received!", payload);
+			})
+			.subscribe();
+
 		return () => {
+			sb.unsubscribe();
 			subscription.unsubscribe();
 		};
 	});
