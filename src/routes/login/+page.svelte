@@ -12,7 +12,7 @@
 
 		<input
 		class={form?.errors?.email ? "input-error" : ""}
-		 type="text"
+		type="text"
 		name="email"
 		/>
 

@@ -20,6 +20,8 @@
 {#if data.session}
 	<p class="welcome">Welcome, {data.session.user.email}</p>
 	<form action="/logout" method="POST" use:enhance={submitLogout}>
+		<a href="/add-room" class="btn btn-secondary">Add room</a>
+		<a href="/rooms" class="btn btn-secondary">Rooms</a>
 		<button type="submit" class="btn btn-primary">Logout</button>
 	</form>
 {:else}
@@ -41,5 +43,12 @@
 		justify-content: center;
 		align-items: center;
 		gap: 1.8rem;
+	}
+
+	form {
+		margin: 0 auto;
+		width: 30vw;
+		display: flex;
+		justify-content: space-around;
 	}
 </style>
