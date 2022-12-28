@@ -20,8 +20,6 @@
 	<button type="submit" class="btn btn-primary">Add</button>
 </form>
 
-<a href="/" class="btn btn-secondary">Home</a>
-
 <style lang="postcss">
 	form {
 		margin: 0 auto 2rem;

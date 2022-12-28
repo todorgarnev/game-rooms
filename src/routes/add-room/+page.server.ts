@@ -13,7 +13,7 @@ const addRoomSchema = z.object({
 	name: z
 		.string()
 		.min(4, { message: "Room name must be at least 4 characters" })
-		.max(15, { message: "Room name be less than 15 character" })
+		.max(15, { message: "Room name be less than 16 character" })
 		.trim()
 });
 
@@ -24,9 +24,16 @@ export const actions: Actions = {
 		try {
 			addRoomSchema.parse(body);
 
-			const { error: err } = await locals.sb
+			const { data, error: err } = await locals.sb
 				.from("rooms")
-				.insert({ name: body.name, users: [locals?.session?.user.id] });
+				.insert({ name: body.name })
+				.select();
+
+			if (data && data.length > 0) {
+				await locals.sb
+					.from("rooms_users")
+					.insert({ room_id: data[0].id, user_id: locals.session?.user.id });
+			}
 
 			if (err) {
 				if (err instanceof AuthApiError && err.status === 400) {
