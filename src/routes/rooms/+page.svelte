@@ -11,7 +11,10 @@
 
 {#if data.rooms && data.rooms.length > 0}
 	{#each data.rooms as room}
-		<button class="room-name" on:click={() => onRoomClick(room.id)}>{room.name}</button>
+		<button class="room-name" on:click={() => onRoomClick(room.id)}>
+			{room.name}
+			<span>Join</span>
+		</button>
 	{/each}
 {:else}
 	<p>No rooms available</p>

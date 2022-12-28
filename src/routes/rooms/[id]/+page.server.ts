@@ -4,7 +4,8 @@ export const load = (async ({ params, locals }) => {
 	const { data } = await locals.sb
 		.from("rooms")
 		.select("name, rooms_users(user_id(username))")
-		.eq("id", params.id);
+		.eq("id", (params as { id: string }).id);
+
 	console.log("roomData: ", JSON.stringify(data));
 
 	return {

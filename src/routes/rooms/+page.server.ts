@@ -6,7 +6,10 @@ export const load = (async ({ locals }) => {
 		throw redirect(303, "/login");
 	}
 
-	const { data } = await locals.sb.from("rooms").select();
+	const { data } = await locals.sb
+		.from("rooms")
+		.select("id, name, rooms_users(user_id(id, username))");
+	console.log("data: ", JSON.stringify(data));
 
 	return {
 		rooms: data
