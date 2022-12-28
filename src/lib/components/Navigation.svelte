@@ -12,6 +12,8 @@
 
 <nav>
 	{#if isLoggedIn}
+		<a href="/add-room" class="nav-item">Add room</a>
+		<a href="/rooms" class="nav-item">Rooms</a>
 		<form action="/logout" method="POST" use:enhance={submitLogout}>
 			<button type="submit" class="nav-item">Logout</button>
 		</form>
@@ -29,6 +31,7 @@
 		background-color: var(--secondary-200);
 
 		& .nav-item {
+			padding: 0;
 			color: #000;
 			background-color: transparent;
 			border: none;
@@ -44,5 +47,9 @@
 				margin-left: 2rem;
 			}
 		}
+	}
+
+	form {
+		margin-left: 2rem;
 	}
 </style>

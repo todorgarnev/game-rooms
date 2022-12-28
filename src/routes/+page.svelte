@@ -7,8 +7,6 @@
 <h1>SvelteKit & Supabase Auth</h1>
 {#if data.session}
 	<p class="welcome">Welcome, {data.session.user.email}</p>
-		<a href="/add-room" class="btn btn-secondary">Add room</a>
-		<a href="/rooms" class="btn btn-secondary">Rooms</a>
 {:else}
 	<p>Let's learn how to register and login users!</p>
 {/if}
