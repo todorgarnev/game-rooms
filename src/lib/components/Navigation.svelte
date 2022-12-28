@@ -13,16 +13,36 @@
 <nav>
 	{#if isLoggedIn}
 		<form action="/logout" method="POST" use:enhance={submitLogout}>
-			<button type="submit" class="">Logout</button>
+			<button type="submit" class="nav-item">Logout</button>
 		</form>
 	{:else}
-		<a href="/login" class="">Login</a>
-		<a href="/register" class="">Register</a>
+		<a href="/login" class="nav-item">Login</a>
+		<a href="/register" class="nav-item">Register</a>
 	{/if}
 </nav>
 
 <style lang="postcss">
 	nav {
+		padding: 1rem 2rem;
+		display: flex;
+		justify-content: flex-end;
 		background-color: var(--secondary-200);
+
+		& .nav-item {
+			color: #000;
+			background-color: transparent;
+			border: none;
+			font-size: 1.5rem;
+			font-weight: bold;
+
+			&:hover {
+				text-decoration: underline;
+				cursor: pointer;
+			}
+
+			&:not(:first-child) {
+				margin-left: 2rem;
+			}
+		}
 	}
 </style>
