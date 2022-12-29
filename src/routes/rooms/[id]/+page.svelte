@@ -1,8 +1,36 @@
 <script lang="ts">
+	import { enhance } from "$app/forms";
 	import type { PageData } from "../[id]/$types";
 
 	export let data: PageData;
 </script>
 
-<h1>Room name: {data.room.name}</h1>
-<h1>Username: {data.room.username}</h1>
+<section class="header-section">
+	<div>
+		<h3>Room name: <span>{data.name}</span></h3>
+		<h3>Users:  <span>{data.usernames.map((name) => name)}</span></h3>
+	</div>
+
+	{#if !data.usersIds.includes(data.session?.user.id ?? "")}
+		<form action="?/join" method="POST" use:enhance>
+			<button class="btn btn-primary" type="submit">Join</button>
+		</form>
+	{/if}
+</section>
+
+<style lang="postcss">
+	.header-section {
+		display: flex;
+		justify-content: space-between;
+		text-align: left;
+
+		& h3 {
+			font-size: 1.8rem;
+		}
+
+		& span {
+			font-size: 1.4rem;
+			color: var(--primary-300);
+		}
+	}
+</style>

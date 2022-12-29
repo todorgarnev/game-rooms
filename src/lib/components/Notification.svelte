@@ -3,17 +3,19 @@
 
 	const clearNotification = () => {
 		setTimeout(() => {
-			showNewRoom.set(false)
-		}, 3000)
-	}
+			showNewRoom.set(false);
+		}, 3000);
+	};
+
+	const closeNotification = () => showNewRoom.set(false);
 
 	$: if ($showNewRoom) clearNotification();
 </script>
 
 {#if $showNewRoom}
 	<div class="notification">
-		<span>	New room has been added!</span>
-		<a href="/rooms">Go to rooms page</a>
+		<span> New room has been added!</span>
+		<a href="/rooms" on:click={closeNotification}>Go to rooms page</a>
 	</div>
 {/if}
 

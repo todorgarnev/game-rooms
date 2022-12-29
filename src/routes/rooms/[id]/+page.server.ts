@@ -1,20 +1,30 @@
+import type { Actions } from "@sveltejs/kit";
+import { getRoomUsers } from "$lib/utils/users";
+import type { Room, ServerRoom } from "$lib/types/room";
 import type { PageServerLoad } from "../$types";
 
 export const load = (async ({ params, locals }) => {
 	const { data } = await locals.sb
 		.from("rooms")
-		.select("name, rooms_users(user_id(username))")
+		.select("id, name, rooms_users(user_id(id, username))")
 		.eq("id", (params as { id: string }).id);
 
-	console.log("roomData: ", JSON.stringify(data));
+	const currentRoom: Room = getRoomUsers(data as ServerRoom[])[0];
 
 	return {
-		room: {
-			name: data && data.length > 0 ? data[0].name : "no name",
-			username:
-				data && data.length > 0 && data[0].rooms_users && data[0].rooms_users.user_id
-					? data[0].rooms_users.user_id.username
-					: "no username"
-		}
+		name: currentRoom.name,
+		usersIds: currentRoom.usersIds,
+		usernames: currentRoom.usernames
 	};
 }) satisfies PageServerLoad;
+
+export const actions: Actions = {
+	join: async ({ locals, params }) => {
+		const { error } = await locals.sb
+			.from("rooms_users")
+			.insert({ room_id: params.id, user_id: locals.session?.user.id })
+			.select();
+
+		console.log("error: ", error);
+	}
+};

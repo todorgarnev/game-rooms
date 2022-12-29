@@ -1,10 +1,15 @@
 import { fail, redirect } from "@sveltejs/kit";
 import { AuthApiError } from "@supabase/supabase-js";
-import { roomSchema } from "$lib/schemas/rooms";
 import type { ZodError } from "zod";
+import { roomSchema } from "$lib/schemas/rooms";
+import { getRoomUsers } from "$lib/utils/users";
 import type { Actions, PageServerLoad } from "./$types";
+import type { Room, ServerRoom } from "$lib/types/room";
 
 export const load = (async ({ locals }) => {
+	const activeRooms: Room[] = [];
+	const myRooms: Room[] = [];
+
 	if (!locals.session) {
 		throw redirect(303, "/login");
 	}
@@ -13,15 +18,19 @@ export const load = (async ({ locals }) => {
 		.from("rooms")
 		.select("id, name, rooms_users(user_id(id, username))");
 
-	// console.log("data: ", JSON.stringify(data));
+	if (data) {
+		getRoomUsers(data as ServerRoom[]).forEach((room: Room) => {
+			if (room.usersIds.includes(locals.session?.user.id ?? "")) {
+				myRooms.push(room);
+			} else {
+				activeRooms.push(room);
+			}
+		});
+	}
 
 	return {
-		activeRooms: data
-			? data.filter((room) => room.rooms_users?.user_id.id !== locals.session?.user.id)
-			: [],
-		myRooms: data
-			? data.filter((room) => room.rooms_users?.user_id.id === locals.session?.user.id)
-			: []
+		activeRooms,
+		myRooms
 	};
 }) satisfies PageServerLoad;
 

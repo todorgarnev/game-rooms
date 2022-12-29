@@ -19,7 +19,6 @@
 			{#each data.activeRooms as room}
 				<button class="room-name" on:click={() => onRoomClick(room.id)}>
 					{room.name}
-					<span>Join</span>
 				</button>
 			{/each}
 		{:else}
@@ -34,7 +33,6 @@
 			{#each data.myRooms as room}
 				<button class="room-name" on:click={() => onRoomClick(room.id)}>
 					{room.name}
-					<span>Join</span>
 				</button>
 			{/each}
 		{:else}
