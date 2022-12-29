@@ -11,7 +11,7 @@
 		<h3>Users:  <span>{data.usernames.length > 0 ? data.usernames : "no users"}</span></h3>
 	</div>
 
-	{#if !data.usersIds.includes(data.session?.user.id ?? "")}
+	{#if !data.usersIds.includes(data.session?.user.id ?? "") && data.usersIds.length < 2}
 		<form action="?/join" method="POST" use:enhance>
 			<button class="btn btn-primary" type="submit">Join</button>
 		</form>
