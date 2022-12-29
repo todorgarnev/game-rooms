@@ -18,7 +18,7 @@
 		{#if data.activeRooms.length > 0}
 			{#each data.activeRooms as room}
 				<button class="room-name" on:click={() => onRoomClick(room.id)}>
-					{room.name}
+					{room.name} - <span class={room.usernames.length === 2 ? "full" : ""}>{room.usernames.length}/2</span>
 				</button>
 			{/each}
 		{:else}
@@ -32,7 +32,7 @@
 		{#if data.myRooms.length > 0}
 			{#each data.myRooms as room}
 				<button class="room-name" on:click={() => onRoomClick(room.id)}>
-					{room.name}
+					{room.name} - <span class={room.usernames.length === 2 ? "full" : ""}>{room.usernames.length}/2</span>
 				</button>
 			{/each}
 		{:else}
@@ -79,6 +79,14 @@
 
 		& input {
 			margin: 2rem 0;
+		}
+
+		& span {
+			font-weight: bold;
+
+			&.full {
+				color: var(--error)
+			}
 		}
 
 		& .room-name {

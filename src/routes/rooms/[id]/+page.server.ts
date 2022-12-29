@@ -20,11 +20,9 @@ export const load = (async ({ params, locals }) => {
 
 export const actions: Actions = {
 	join: async ({ locals, params }) => {
-		const { error } = await locals.sb
+		await locals.sb
 			.from("rooms_users")
 			.insert({ room_id: params.id, user_id: locals.session?.user.id })
 			.select();
-
-		console.log("error: ", error);
 	}
 };
