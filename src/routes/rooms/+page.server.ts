@@ -2,7 +2,7 @@ import { fail, redirect } from "@sveltejs/kit";
 import { AuthApiError } from "@supabase/supabase-js";
 import type { ZodError } from "zod";
 import { roomSchema } from "$lib/schemas/rooms";
-import { getRoomUsers } from "$lib/utils/users";
+import { getRoomsUsers } from "$lib/utils/users";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Room, ServerRoom } from "$lib/types/room";
 
@@ -19,7 +19,7 @@ export const load = (async ({ locals }) => {
 		.select("id, name, rooms_users(user_id(id, username))");
 
 	if (data) {
-		getRoomUsers(data as ServerRoom[]).forEach((room: Room) => {
+		getRoomsUsers(data as ServerRoom[]).forEach((room: Room) => {
 			if (room.usersIds.includes(locals.session?.user.id ?? "")) {
 				myRooms.push(room);
 			} else {

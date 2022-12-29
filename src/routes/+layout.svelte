@@ -23,10 +23,10 @@
 				"postgres_changes",
 				{ event: "*", schema: "public", table: "rooms_users" },
 				(payload: any) => {
-					if (payload.new.user_id !== data.session?.user.id) {
+					if (payload.eventType === "INSERT" && payload.new.user_id !== data.session?.user.id) {
 						showNewRoom.set(true);
-						invalidateAll();
 					}
+					invalidateAll();
 				}
 			)
 			.subscribe();
