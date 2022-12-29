@@ -13,7 +13,7 @@ export const load = (async ({ locals }) => {
 	const { data } = await locals.sb.from("profiles").select().eq("id", locals.session?.user.id);
 
 	return {
-		username: data?.[0].username || ""
+		username: data && data?.length > 0 ? data[0].username : ""
 	};
 }) satisfies PageServerLoad;
 

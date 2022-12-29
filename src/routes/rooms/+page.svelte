@@ -1,42 +1,105 @@
 <script lang="ts">
+	import { enhance } from "$app/forms";
 	import { goto } from "$app/navigation";
-	import type { PageData } from "./$types";
+	import type { ActionData, PageData } from "./$types";
 
 	export let data: PageData;
+	export let form: ActionData;
 
 	const onRoomClick = (id: number) => {
 		goto(`rooms/${id}`);
 	};
 </script>
 
-{#if data.rooms && data.rooms.length > 0}
-	{#each data.rooms as room}
-		<button class="room-name" on:click={() => onRoomClick(room.id)}>
-			{room.name}
-			<span>Join</span>
-		</button>
-	{/each}
-{:else}
-	<p>No rooms available</p>
-{/if}
+<section>
+	<div>
+		<h3>Active rooms</h3>
+
+		{#if data.activeRooms.length > 0}
+			{#each data.activeRooms as room}
+				<button class="room-name" on:click={() => onRoomClick(room.id)}>
+					{room.name}
+					<span>Join</span>
+				</button>
+			{/each}
+		{:else}
+			<p>No rooms available</p>
+		{/if}
+	</div>
+
+	<div>
+		<h3>My rooms</h3>
+
+		{#if data.myRooms.length > 0}
+			{#each data.myRooms as room}
+				<button class="room-name" on:click={() => onRoomClick(room.id)}>
+					{room.name}
+					<span>Join</span>
+				</button>
+			{/each}
+		{:else}
+			<p>No rooms available</p>
+		{/if}
+	</div>
+
+	<div>
+		<h3>Create new room</h3>
+
+		<form action="?/add" method="POST" use:enhance>
+			<input
+				class={form?.errors?.name ? "input-error" : ""}
+				type="text"
+				name="name"
+				value={form?.data?.name || ""}
+			/>
+
+			{#if form?.errors?.name}
+				<span class="error">{form.errors.name[0]}</span>
+			{/if}
+
+			<button type="submit" class="btn btn-primary">Add</button>
+		</form>
+	</div>
+</section>
 
 <style lang="postcss">
-	.room-name {
-		margin: 0 auto;
-		padding: 0.5rem 2rem;
-		display: block;
-		background-color: var(--primary-100);
-		color: #000;
-		border: 0.1rem solid var(--primary-300);
-		font-size: 1.6rem;
-		cursor: pointer;
+	section {
+		display: flex;
+		justify-content: space-between;
 
-		&:not(:last-child) {
-			margin-bottom: 2rem;
+		& h3 {
+			margin-bottom: 3rem;
+			font-size: 1.8rem;
 		}
 
-		&:hover {
-			background-color: var(--primary-300);
+		& form {
+			margin: 0 auto 2rem;
+			display: flex;
+			flex-direction: column;
+			width: 30rem;
+		}
+
+		& input {
+			margin: 2rem 0;
+		}
+
+		& .room-name {
+			margin: 0 auto;
+			padding: 0.5rem 2rem;
+			display: block;
+			background-color: var(--primary-100);
+			color: #000;
+			border: 0.1rem solid var(--primary-300);
+			font-size: 1.6rem;
+			cursor: pointer;
+
+			&:not(:last-child) {
+				margin-bottom: 2rem;
+			}
+
+			&:hover {
+				background-color: var(--primary-300);
+			}
 		}
 	}
 </style>

@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { roomName } from "../stores/notification";
+	import { showNewRoom } from "../stores/notification";
 
 	const clearNotification = () => {
 		setTimeout(() => {
-			roomName.set("")
+			showNewRoom.set(false)
 		}, 3000)
 	}
 
-	$: if ($roomName) clearNotification();
+	$: if ($showNewRoom) clearNotification();
 </script>
 
-{#if $roomName}
+{#if $showNewRoom}
 	<div class="notification">
-		<span>	Room {$roomName} has been added!</span>
+		<span>	New room has been added!</span>
 		<a href="/rooms">Go to rooms page</a>
 	</div>
 {/if}
@@ -25,8 +25,13 @@
 		padding: 1rem 2rem;
 		display: flex;
 		flex-direction: column;
-		background-color: var(--secondary-200);
+		background-color: var(--primary-200);
 		color: var(--dark-300);
 		font-size: 1.4rem;
+
+		& a {
+			font-weight: bold;
+			text-decoration: underline;
+		}
 	}
 </style>

@@ -13,7 +13,6 @@
 <nav>
 	{#if isLoggedIn}
 		<a href="/" class="nav-item home">HOME</a>
-		<a href="/add-room" class="nav-item">Add room</a>
 		<a href="/rooms" class="nav-item">Rooms</a>
 		<a href="/profile" class="nav-item">Profile</a>
 		<form action="/logout" method="POST" use:enhance={submitLogout}>
