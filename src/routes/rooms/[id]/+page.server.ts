@@ -22,18 +22,6 @@ export const load = (async ({ params, locals }) => {
 
 export const actions: Actions = {
 	join: async ({ locals, params }) => {
-		const { data } = await locals.sb
-			.from("rooms")
-			.select("id, name, rooms_users(user_id(id, username))")
-			.eq("id", (params as { id: string }).id)
-			.limit(1)
-			.single();
-
-		// can return error to FE
-		if (data && data.rooms_users && (data as ServerRoom).rooms_users.length > 1) {
-			return;
-		}
-
 		await locals.sb
 			.from("rooms_users")
 			.insert({ room_id: params.id, user_id: locals.session?.user.id })

@@ -62,8 +62,8 @@
 
 <style lang="postcss">
 	section {
-		display: flex;
-		justify-content: space-between;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
 
 		& h3 {
 			margin-bottom: 3rem;
@@ -71,10 +71,10 @@
 		}
 
 		& form {
-			margin: 0 auto 2rem;
+			margin: 0 auto;
 			display: flex;
 			flex-direction: column;
-			width: 30rem;
+			max-width: 30rem;
 		}
 
 		& input {
