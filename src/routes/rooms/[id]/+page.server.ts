@@ -1,6 +1,6 @@
 import { redirect, type Actions } from "@sveltejs/kit";
-import { getRoomUsers, getRoundWinner } from "$lib/utils";
-import type { Room, ServerRoom } from "$lib/types";
+import { canIMakeMove, getRoomUsers, getRoundWinner } from "$lib/utils";
+import type { Room, ServerRoom, ServerRound } from "$lib/types";
 import type { PageServerLoad } from "../$types";
 
 export const load = (async ({ params, locals }) => {
@@ -73,7 +73,7 @@ export const actions: Actions = {
 					selected_number: selectedNumber
 				});
 			} else {
-				const lastActiveRound = allRounds[allRounds.length - 1];
+				const lastActiveRound: ServerRound = allRounds[allRounds.length - 1];
 
 				if (lastActiveRound.moves.length === 2) {
 					const { data: newRound } = await locals.sb
@@ -88,7 +88,7 @@ export const actions: Actions = {
 						user_id: locals.session?.user.id,
 						selected_number: selectedNumber
 					});
-				} else {
+				} else if (canIMakeMove(lastActiveRound.moves, locals.session?.user.id as string)) {
 					await locals.sb
 						.from("moves")
 						.insert({
@@ -100,7 +100,7 @@ export const actions: Actions = {
 
 					const { data: lastRound } = await locals.sb
 						.from("rounds")
-						.select("moves(user_id, selected_number)")
+						.select("moves(*)")
 						.eq("id", lastActiveRound.id)
 						.limit(1)
 						.single();
