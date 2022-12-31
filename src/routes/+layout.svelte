@@ -49,22 +49,24 @@
 			.subscribe();
 
 		const roundsSb = supabaseClient
-			.channel("public:moves")
+			.channel("public:rounds")
 			.on(
 				"postgres_changes",
-				{ event: "INSERT", schema: "public", table: "moves" },
+				{ event: "UPDATE", schema: "public", table: "rounds" },
 				(payload: any) => {
-					console.log("payload: ", payload);
+					console.log('payload: ', payload);
 
-					invalidateAll();
+					if (payload.new.round_winner) {
+						invalidateAll();
+					}
 				}
 			)
 			.subscribe();
 
 		return () => {
 			subscription.unsubscribe();
-			roomsSb.unsubscribe();
 			roomsUsersSb.unsubscribe();
+			roomsSb.unsubscribe();
 			roundsSb.unsubscribe();
 		};
 	});

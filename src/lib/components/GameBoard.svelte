@@ -1,5 +1,10 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from "$app/forms";
+	import { getCurrentScore } from "$lib/utils";
+	import type { Round } from "$lib/types";
+
+	export let rounds: Round[];
+	export let opponentUsername: string;
 
 	let selectedNumber: number;
 
@@ -23,7 +28,7 @@
 
 	<div class="current-score">
 		<span>Current score</span>
-		<span class="result">1:5</span>
+		<span class="result">{getCurrentScore(rounds, opponentUsername)}</span>
 	</div>
 </section>
 
@@ -34,14 +39,28 @@
 	</div>
 
 	<div>
-		Pesho
+		{opponentUsername}
 		<div>{selectedNumber ?? ""}</div>
 	</div>
 </section>
 
+<section class="bottom-section">
+	{#each rounds as round}
+		<div class="round-info">
+			<span>Round {round.roundNumber}</span>
+
+			<span class="round-picks">
+				<span>You picked {round.moves[0].selectedNumber}</span>
+				<span>{opponentUsername} picked {round.moves[1].selectedNumber}</span>
+			</span>
+
+			<span>Winner {round.roundWinner === opponentUsername ? opponentUsername : "You"}</span>
+		</div>
+	{/each}
+</section>
+
 <style lang="postcss">
 	.top-section {
-		margin-bottom: 5rem;
 		display: grid;
 		grid-template-columns: 80% 20%;
 
@@ -87,11 +106,32 @@
 	}
 
 	.main-section {
+		margin: 20rem 0;
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 
 		& div {
 			font-size: 5rem;
+		}
+	}
+
+	.bottom-section {
+		& span {
+			display: inline-block;
+			font-size: 2rem;
+		}
+
+		& .round-info {
+			padding: 2rem 0;
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			align-items: center;
+			border-bottom: 0.2rem solid var(--primary-100);
+
+			& .round-picks {
+				display: flex;
+				flex-direction: column;
+			}
 		}
 	}
 </style>

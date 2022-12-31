@@ -1,5 +1,11 @@
 import { redirect, type Actions } from "@sveltejs/kit";
-import { canIMakeMove, getRoomUsers, getRoundWinner } from "$lib/utils";
+import {
+	canIMakeMove,
+	getOpponentUsername,
+	getRoomInfo,
+	getRoundsInfo,
+	getRoundWinner
+} from "$lib/utils";
 import type { Room, ServerRoom, ServerRound } from "$lib/types";
 import type { PageServerLoad } from "../$types";
 
@@ -8,21 +14,33 @@ export const load = (async ({ params, locals }) => {
 		throw redirect(303, "/login");
 	}
 
-	const { data } = await locals.sb
+	const { data: roomData } = await locals.sb
 		.from("rooms")
 		.select("*, rooms_users(user_id(id, username))")
 		.eq("id", (params as { id: string }).id)
 		.limit(1)
 		.single();
 
-	const currentRoom: Room = getRoomUsers(data as ServerRoom);
+	const currentRoom: Room = getRoomInfo(roomData as ServerRoom);
+
+	const { data: roundsData } = await locals.sb
+		.from("rounds")
+		.select("*, round_winner(id, username), moves(*, user_id(id, username))")
+		.eq("room_id", (params as { id: string }).id);
 
 	return {
 		name: currentRoom.name,
 		usersIds: currentRoom.usersIds,
 		usernames: currentRoom.usernames,
+		opponent: getOpponentUsername(roomData, locals.session?.user.id),
 		winner: currentRoom.winner,
-		isGameStarted: currentRoom.isGameStarted
+		isGameStarted: currentRoom.isGameStarted,
+		rounds:
+			roundsData &&
+			roundsData.length > 0 &&
+			roundsData.every((round) => !!round.round_winner) &&
+			// тук трябва да се преправи да подава рундовете, само когато всички са минали (са с победител)
+			getRoundsInfo(roundsData as ServerRound[], locals.session?.user.id)
 	};
 }) satisfies PageServerLoad;
 
@@ -55,7 +73,7 @@ export const actions: Actions = {
 
 		const { data: allRounds } = await locals.sb
 			.from("rounds")
-			.select("id, round_number, round_winner, moves(*)")
+			.select("id, round_number, round_winner, moves(*, user_id(id))")
 			.eq("room_id", params.id);
 
 		if (allRounds) {
@@ -100,7 +118,7 @@ export const actions: Actions = {
 
 					const { data: lastRound } = await locals.sb
 						.from("rounds")
-						.select("moves(*)")
+						.select("moves(*, user_id(id, username))")
 						.eq("id", lastActiveRound.id)
 						.limit(1)
 						.single();

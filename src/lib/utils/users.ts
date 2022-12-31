@@ -1,6 +1,6 @@
 import type { Room, ServerRoom, ServerUser } from "$lib/types";
 
-export const getRoomsUsers = (roomsData: ServerRoom[]): Room[] => {
+export const getRoomsInfo = (roomsData: ServerRoom[]): Room[] => {
 	return roomsData.map((serverRoom: ServerRoom) => ({
 		id: serverRoom.id,
 		name: serverRoom.name,
@@ -13,7 +13,7 @@ export const getRoomsUsers = (roomsData: ServerRoom[]): Room[] => {
 	}));
 };
 
-export const getRoomUsers = (roomsData: ServerRoom): Room => {
+export const getRoomInfo = (roomsData: ServerRoom): Room => {
 	return {
 		id: roomsData.id,
 		name: roomsData.name,
@@ -24,4 +24,12 @@ export const getRoomUsers = (roomsData: ServerRoom): Room => {
 			(roomServerUser: ServerUser) => roomServerUser.user_id.username
 		)
 	};
+};
+
+export const getOpponentUsername = (currentRoom: ServerRoom, myUserId: string): string => {
+	const opponentUser: ServerUser | undefined = currentRoom.rooms_users.find(
+		(user: ServerUser) => user.user_id.id !== myUserId
+	);
+
+	return opponentUser ? opponentUser.user_id.username : "no user";
 };

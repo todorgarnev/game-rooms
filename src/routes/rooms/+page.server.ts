@@ -2,13 +2,14 @@ import { fail, redirect } from "@sveltejs/kit";
 import { AuthApiError } from "@supabase/supabase-js";
 import type { ZodError } from "zod";
 import { roomSchema } from "$lib/schemas/rooms";
-import { getRoomsUsers } from "$lib/utils";
+import { getRoomsInfo } from "$lib/utils";
 import type { Room, ServerRoom } from "$lib/types";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load = (async ({ locals }) => {
 	const activeRooms: Room[] = [];
 	const myRooms: Room[] = [];
+	const liveRooms: Room[] = [];
 
 	if (!locals.session) {
 		throw redirect(303, "/login");
@@ -16,12 +17,16 @@ export const load = (async ({ locals }) => {
 
 	const { data } = await locals.sb
 		.from("rooms")
-		.select("id, name, rooms_users(user_id(id, username))");
+		.select("id, name, is_game_started, rooms_users(user_id(id, username))");
 
 	if (data) {
-		getRoomsUsers(data as ServerRoom[]).forEach((room: Room) => {
+		getRoomsInfo(data as ServerRoom[]).forEach((room: Room) => {
 			if (room.usersIds.includes(locals.session?.user.id ?? "")) {
-				myRooms.push(room);
+				if (room.isGameStarted) {
+					liveRooms.push(room);
+				} else {
+					myRooms.push(room);
+				}
 			} else {
 				activeRooms.push(room);
 			}
@@ -30,7 +35,8 @@ export const load = (async ({ locals }) => {
 
 	return {
 		activeRooms,
-		myRooms
+		myRooms,
+		liveRooms
 	};
 }) satisfies PageServerLoad;
 

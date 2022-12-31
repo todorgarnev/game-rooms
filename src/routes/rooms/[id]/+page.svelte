@@ -35,7 +35,7 @@
 	<!-- <h3>Current score:{}/{}</h3> -->
 </section>
 
-<GameBoard />
+<GameBoard rounds={data.rounds} opponentUsername={data.opponent} />
 
 <style lang="postcss">
 	.header-section {
