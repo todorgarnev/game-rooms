@@ -2,9 +2,9 @@ import { fail, redirect } from "@sveltejs/kit";
 import { AuthApiError } from "@supabase/supabase-js";
 import type { ZodError } from "zod";
 import { roomSchema } from "$lib/schemas/rooms";
-import { getRoomsUsers } from "$lib/utils/users";
+import { getRoomsUsers } from "$lib/utils";
+import type { Room, ServerRoom } from "$lib/types";
 import type { Actions, PageServerLoad } from "./$types";
-import type { Room, ServerRoom } from "$lib/types/room";
 
 export const load = (async ({ locals }) => {
 	const activeRooms: Room[] = [];

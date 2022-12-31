@@ -48,10 +48,24 @@
 			})
 			.subscribe();
 
+		const roundsSb = supabaseClient
+			.channel("public:moves")
+			.on(
+				"postgres_changes",
+				{ event: "INSERT", schema: "public", table: "moves" },
+				(payload: any) => {
+					console.log("payload: ", payload);
+
+					invalidateAll();
+				}
+			)
+			.subscribe();
+
 		return () => {
+			subscription.unsubscribe();
 			roomsSb.unsubscribe();
 			roomsUsersSb.unsubscribe();
-			subscription.unsubscribe();
+			roundsSb.unsubscribe();
 		};
 	});
 </script>

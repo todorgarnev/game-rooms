@@ -4,7 +4,7 @@
 	let selectedNumber: number;
 
 	const submitFormData: SubmitFunction = ({ data }) => {
-		data.append("number", String(selectedNumber));
+		data.append("selectedNumber", String(selectedNumber));
 	};
 </script>
 

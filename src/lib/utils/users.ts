@@ -1,4 +1,4 @@
-import type { Room, ServerUser, ServerRoom } from "$lib/types/room";
+import type { Room, ServerRoom, ServerUser } from "$lib/types";
 
 export const getRoomsUsers = (roomsData: ServerRoom[]): Room[] => {
 	return roomsData.map((serverRoom: ServerRoom) => ({

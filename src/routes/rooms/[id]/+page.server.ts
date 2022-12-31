@@ -1,6 +1,6 @@
 import { redirect, type Actions } from "@sveltejs/kit";
-import { getRoomUsers } from "$lib/utils/users";
-import type { Room, ServerRoom } from "$lib/types/room";
+import { getRoomUsers, getRoundWinner } from "$lib/utils";
+import type { Room, ServerRoom } from "$lib/types";
 import type { PageServerLoad } from "../$types";
 
 export const load = (async ({ params, locals }) => {
@@ -51,11 +51,11 @@ export const actions: Actions = {
 		await locals.sb.from("rooms").update({ is_game_started: true }).eq("id", params.id);
 	},
 	pick: async ({ request, locals, params }) => {
-		const { number } = Object.fromEntries(await request.formData());
+		const { selectedNumber } = Object.fromEntries(await request.formData());
 
 		const { data: allRounds } = await locals.sb
 			.from("rounds")
-			.select("id, round_number, moves(*)")
+			.select("id, round_number, round_winner, moves(*)")
 			.eq("room_id", params.id);
 
 		if (allRounds) {
@@ -70,7 +70,7 @@ export const actions: Actions = {
 				await locals.sb.from("moves").insert({
 					round_id: newRound?.id,
 					user_id: locals.session?.user.id,
-					selected_number: number
+					selected_number: selectedNumber
 				});
 			} else {
 				const lastActiveRound = allRounds[allRounds.length - 1];
@@ -86,14 +86,31 @@ export const actions: Actions = {
 					await locals.sb.from("moves").insert({
 						round_id: newRound?.id,
 						user_id: locals.session?.user.id,
-						selected_number: number
+						selected_number: selectedNumber
 					});
 				} else {
-					await locals.sb.from("moves").insert({
-						round_id: lastActiveRound.id,
-						user_id: locals.session?.user.id,
-						selected_number: number
-					});
+					await locals.sb
+						.from("moves")
+						.insert({
+							round_id: lastActiveRound.id,
+							user_id: locals.session?.user.id,
+							selected_number: selectedNumber
+						})
+						.select("round_id(moves(*))");
+
+					const { data: lastRound } = await locals.sb
+						.from("rounds")
+						.select("moves(user_id, selected_number)")
+						.eq("id", lastActiveRound.id)
+						.limit(1)
+						.single();
+
+					if (lastRound && !lastActiveRound.round_winner) {
+						await locals.sb
+							.from("rounds")
+							.update({ round_winner: getRoundWinner(lastRound.moves) })
+							.eq("id", lastActiveRound.id);
+					}
 				}
 			}
 		}
