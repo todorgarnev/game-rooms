@@ -17,7 +17,7 @@
 			invalidateAll();
 		});
 
-		const sb = supabaseClient
+		const roomsUsersSb = supabaseClient
 			.channel("public:rooms_users")
 			.on(
 				"postgres_changes",
@@ -34,8 +34,23 @@
 			)
 			.subscribe();
 
+		const roomsSb = supabaseClient
+			.channel("public:rooms")
+			.on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, (payload: any) => {
+				console.log("payload: ", payload);
+				// TODO a better notification with precise room information
+				// will need additional supabase requests here
+				// if (payload.eventType === "INSERT" && payload.new.user_id !== data.session?.user.id) {
+				// 	showNewRoom.set(true);
+				// }
+
+				invalidateAll();
+			})
+			.subscribe();
+
 		return () => {
-			sb.unsubscribe();
+			roomsSb.unsubscribe();
+			roomsUsersSb.unsubscribe();
 			subscription.unsubscribe();
 		};
 	});
