@@ -45,7 +45,7 @@
 </section>
 
 <section class="bottom-section">
-	{#each rounds as round}
+	{#each rounds.reverse() as round}
 		<div class="round-info">
 			<span>Round {round.roundNumber}</span>
 

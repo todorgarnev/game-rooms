@@ -6,6 +6,22 @@ export const getRoundWinner = (moves: ServerMove[]): string => {
 		: moves[1].user_id.id;
 };
 
+export const getRoomWinner = (currentRounds: ServerRound[]): string => {
+	const winnersMap = new Map<string, number>([]);
+
+	currentRounds.forEach((round: ServerRound) => {
+		if (winnersMap.has(round.round_winner.id)) {
+			winnersMap.set(round.round_winner.id, (winnersMap.get(round.round_winner.id) as number) + 1);
+		} else {
+			winnersMap.set(round.round_winner.id, 1);
+		}
+	});
+
+	const [[firstUser, firstUserRounds], [secondUser, secondUserRounds]] = winnersMap.entries();
+
+	return firstUserRounds > secondUserRounds ? firstUser : secondUser;
+};
+
 export const canIMakeMove = (moves: ServerMove[], myUserId: string): boolean => {
 	return !moves.some((move: ServerMove) => move.user_id.id === myUserId);
 };
@@ -33,6 +49,13 @@ export const getCurrentScore = (currentRounds: Round[], opponentUsername: string
 	});
 
 	return currentRounds.length > 0 ? `${myRounds}:${opponentRounds}` : "0:0";
+};
+
+export const isGameFinished = (currentRounds: ServerRound[]): boolean => {
+	const lastRoundNumber: number = currentRounds[currentRounds.length - 1].round_number;
+	const isLastRoundFinished: boolean = currentRounds[currentRounds.length - 1].moves.length === 2;
+
+	return lastRoundNumber === 9 && isLastRoundFinished;
 };
 
 const sortMoves = (moves: ServerMove[], myUserId: string): Move[] => {
