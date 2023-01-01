@@ -11,15 +11,16 @@ export const canIMakeMove = (moves: ServerMove[], myUserId: string): boolean => 
 };
 
 export const getRoundsInfo = (roundsData: ServerRound[], myUserId: string): Round[] => {
-	return roundsData.map((round: ServerRound) => ({
-		roundNumber: round.round_number,
-		roundWinner: round.round_winner.username,
-		moves: sortMoves(round.moves, myUserId)
-	}));
+	return roundsData
+		.filter((round: ServerRound) => !!round.round_winner)
+		.map((round: ServerRound) => ({
+			roundNumber: round.round_number,
+			roundWinner: round.round_winner.username,
+			moves: sortMoves(round.moves, myUserId)
+		}));
 };
 
 export const getCurrentScore = (currentRounds: Round[], opponentUsername: string): string => {
-	console.log("currentRounds: ", currentRounds);
 	let myRounds = 0;
 	let opponentRounds = 0;
 

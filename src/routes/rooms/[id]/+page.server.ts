@@ -35,12 +35,7 @@ export const load = (async ({ params, locals }) => {
 		opponent: getOpponentUsername(roomData, locals.session?.user.id),
 		winner: currentRoom.winner,
 		isGameStarted: currentRoom.isGameStarted,
-		rounds:
-			roundsData &&
-			roundsData.length > 0 &&
-			roundsData.every((round) => !!round.round_winner) &&
-			// тук трябва да се преправи да подава рундовете, само когато всички са минали (са с победител)
-			getRoundsInfo(roundsData as ServerRound[], locals.session?.user.id)
+		rounds: getRoundsInfo(roundsData as ServerRound[], locals.session?.user.id)
 	};
 }) satisfies PageServerLoad;
 
