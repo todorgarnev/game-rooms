@@ -33,7 +33,9 @@ export const load = (async ({ locals }) => {
 					myRooms.push(room);
 				}
 			} else {
-				activeRooms.push(room);
+				if (room.usersIds.length < 2) {
+					activeRooms.push(room);
+				}
 			}
 		});
 	}
