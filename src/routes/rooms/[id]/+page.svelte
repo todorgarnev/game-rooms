@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 	import GameBoard from "$lib/components/GameBoard.svelte";
+	import { isGameFinished } from "$lib/utils";
 	import type { PageData } from "../[id]/$types";
 
 	export let data: PageData;
@@ -35,7 +36,9 @@
 	<!-- <h3>Current score:{}/{}</h3> -->
 </section>
 
-<GameBoard rounds={data.rounds} opponentUsername={data.opponent} />
+{#if data.isGameStarted}
+	<GameBoard rounds={data.rounds} opponentUsername={data.opponent} winner={data.winner} />
+{/if}
 
 <style lang="postcss">
 	.header-section {

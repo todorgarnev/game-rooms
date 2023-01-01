@@ -5,6 +5,7 @@
 
 	export let rounds: Round[];
 	export let opponentUsername: string;
+	export let winner: string | null;
 
 	let selectedNumber: number;
 
@@ -13,36 +14,48 @@
 	};
 </script>
 
-<section class="top-section">
-	<form class="numbers" action="?/pick" method="POST" use:enhance={submitFormData}>
-		{#each Array.from({ length: 10 }, (_, i) => i + 1) as number}
-			<button
-				class={`number${selectedNumber === number ? " selected" : ""}`}
-				on:click={() => (selectedNumber = number)}
-				type="submit"
-			>
-				{number}
-			</button>
-		{/each}
-	</form>
+{#if winner}
+	<section class="top-section">
+		<div>
+			Game winner:
+			<span class="winner">{winner}</span>
+			with
+			<span class="winner">{getCurrentScore(rounds, opponentUsername)}</span>
+			rounds
+		</div>
+	</section>
+{:else}
+	<section class="top-section">
+		<form class="numbers" action="?/pick" method="POST" use:enhance={submitFormData}>
+			{#each Array.from({ length: 10 }, (_, i) => i + 1) as number}
+				<button
+					class={`number${selectedNumber === number ? " selected" : ""}`}
+					on:click={() => (selectedNumber = number)}
+					type="submit"
+				>
+					{number}
+				</button>
+			{/each}
+		</form>
 
-	<div class="current-score">
-		<span>Current score</span>
-		<span class="result">{getCurrentScore(rounds, opponentUsername)}</span>
-	</div>
-</section>
+		<div class="current-score">
+			<span>Current score</span>
+			<span class="result">{getCurrentScore(rounds, opponentUsername)}</span>
+		</div>
+	</section>
 
-<section class="main-section">
-	<div>
-		You
-		<div>{selectedNumber ?? ""}</div>
-	</div>
+	<section class="main-section">
+		<div>
+			You
+			<div>{selectedNumber ?? ""}</div>
+		</div>
 
-	<div>
-		{opponentUsername}
-		<div>{selectedNumber ?? ""}</div>
-	</div>
-</section>
+		<div>
+			{opponentUsername}
+			<div>{selectedNumber ?? ""}</div>
+		</div>
+	</section>
+{/if}
 
 <section class="bottom-section">
 	{#each rounds.reverse() as round}
@@ -61,8 +74,16 @@
 
 <style lang="postcss">
 	.top-section {
+		margin-bottom: 5rem;
 		display: grid;
 		grid-template-columns: 80% 20%;
+		font-size: 4rem;
+
+		& .winner {
+			color: var(--primary-100);
+			font-size: 4.5rem;
+			font-weight: bold;
+		}
 
 		& .numbers {
 			display: flex;
@@ -72,7 +93,6 @@
 			& .number {
 				padding: 0 2rem;
 				color: rgb(26, 23, 23);
-				font-size: 4rem;
 				background-color: var(--primary-300);
 				border: 0.3rem solid var(--primary-100);
 
@@ -106,7 +126,7 @@
 	}
 
 	.main-section {
-		margin: 20rem 0;
+		margin: 15rem 20rem 0;
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 

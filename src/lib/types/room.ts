@@ -10,7 +10,10 @@ export type ServerRoom = {
 	name: string;
 	is_game_started: boolean;
 	created_at: string;
-	winner: string | null;
+	winner: {
+		id: string;
+		username: string;
+	} | null;
 	rooms_users: ServerUser[];
 };
 

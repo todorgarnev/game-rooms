@@ -18,12 +18,12 @@ export const load = (async ({ params, locals }) => {
 
 	const { data: roomData } = await locals.sb
 		.from("rooms")
-		.select("*, rooms_users(user_id(id, username))")
+		.select("*, rooms_users(user_id(id, username)), winner(id, username)")
 		.eq("id", (params as { id: string }).id)
 		.limit(1)
 		.single();
 
-	const currentRoom: Room = getRoomInfo(roomData as ServerRoom);
+	const currentRoom: Room = getRoomInfo(roomData as ServerRoom, locals.session.user.id);
 
 	const { data: roundsData } = await locals.sb
 		.from("rounds")
