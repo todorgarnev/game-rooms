@@ -63,11 +63,23 @@
 			)
 			.subscribe();
 
+			const movesSb = supabaseClient
+			.channel("public:moves")
+			.on(
+				"postgres_changes",
+				{ event: "INSERT", schema: "public", table: "moves" },
+				(payload: any) => {
+						invalidateAll();
+				}
+			)
+			.subscribe();
+
 		return () => {
 			subscription.unsubscribe();
 			roomsUsersSb.unsubscribe();
 			roomsSb.unsubscribe();
 			roundsSb.unsubscribe();
+			movesSb.unsubscribe();
 		};
 	});
 </script>

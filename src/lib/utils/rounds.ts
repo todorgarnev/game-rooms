@@ -1,4 +1,4 @@
-import type { Move, Round, ServerMove, ServerRound } from "$lib/types";
+import type { Move, Round, RoundSelectedNumbers, ServerMove, ServerRound } from "$lib/types";
 
 export const getRoundWinner = (moves: ServerMove[]): string => {
 	return moves[0].selected_number > moves[1].selected_number
@@ -52,10 +52,54 @@ export const getCurrentScore = (currentRounds: Round[], opponentUsername: string
 };
 
 export const isGameFinished = (currentRounds: ServerRound[]): boolean => {
-	const lastRoundNumber: number = currentRounds[currentRounds.length - 1].round_number;
-	const isLastRoundFinished: boolean = currentRounds[currentRounds.length - 1].moves.length === 2;
+	if (currentRounds.length > 1) {
+		const lastRoundNumber: number = currentRounds[currentRounds.length - 1].round_number;
+		const isLastRoundFinished: boolean = currentRounds[currentRounds.length - 1].moves.length === 2;
 
-	return lastRoundNumber === 9 && isLastRoundFinished;
+		return lastRoundNumber === 9 && isLastRoundFinished;
+	}
+
+	return false;
+};
+
+export const getAvailableNumbers = (currentRounds: ServerRound[], myUser: string): number[] => {
+	const allNumbers: number[] = Array.from({ length: 10 }, (_, i) => i + 1);
+	const selectedNumbers: number[] = [];
+
+	if (currentRounds.length === 0) {
+		return allNumbers;
+	}
+
+	currentRounds.forEach((round: ServerRound) => {
+		round.moves.forEach((move: ServerMove) => {
+			if (move.user_id.id === myUser) {
+				selectedNumbers.push(move.selected_number);
+			}
+		});
+	});
+
+	return allNumbers.filter((x: number) => !selectedNumbers.includes(x));
+};
+
+export const getRoundSelectedNumbers = (
+	currentRound: ServerRound,
+	myUser: string
+): RoundSelectedNumbers => {
+	let myNumber: number | null = null;
+	let opponentNumber: number | null = null;
+
+	currentRound.moves.forEach((move: ServerMove) => {
+		if (move.user_id.id === myUser) {
+			myNumber = move.selected_number;
+		} else {
+			opponentNumber = move.selected_number;
+		}
+	});
+
+	return {
+		my: myNumber,
+		opponent: opponentNumber
+	};
 };
 
 const sortMoves = (moves: ServerMove[], myUserId: string): Move[] => {

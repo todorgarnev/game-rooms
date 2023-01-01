@@ -1,9 +1,11 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import {
 	canIMakeMove,
+	getAvailableNumbers,
 	getOpponentUsername,
 	getRoomInfo,
 	getRoomWinner,
+	getRoundSelectedNumbers,
 	getRoundsInfo,
 	getRoundWinner,
 	isGameFinished
@@ -16,6 +18,8 @@ export const load = (async ({ params, locals }) => {
 		throw redirect(303, "/login");
 	}
 
+	const myUser: string = locals.session.user.id;
+
 	const { data: roomData } = await locals.sb
 		.from("rooms")
 		.select("*, rooms_users(user_id(id, username)), winner(id, username)")
@@ -23,12 +27,15 @@ export const load = (async ({ params, locals }) => {
 		.limit(1)
 		.single();
 
-	const currentRoom: Room = getRoomInfo(roomData as ServerRoom, locals.session.user.id);
+	const currentRoom: Room = getRoomInfo(roomData as ServerRoom, myUser);
 
 	const { data: roundsData } = await locals.sb
 		.from("rounds")
 		.select("*, round_winner(id, username), moves(*, user_id(id, username))")
 		.eq("room_id", (params as { id: string }).id);
+	const lastRound: ServerRound = (roundsData as ServerRound[])[
+		(roundsData as ServerRound[]).length - 1
+	];
 
 	return {
 		name: currentRoom.name,
@@ -37,7 +44,10 @@ export const load = (async ({ params, locals }) => {
 		opponent: getOpponentUsername(roomData, locals.session?.user.id),
 		winner: currentRoom.winner,
 		isGameStarted: currentRoom.isGameStarted,
-		rounds: getRoundsInfo(roundsData as ServerRound[], locals.session?.user.id)
+		rounds: getRoundsInfo(roundsData as ServerRound[], locals.session?.user.id),
+		availableNumbers: getAvailableNumbers(roundsData as ServerRound[], myUser),
+		myCurrentNumber: getRoundSelectedNumbers(lastRound, myUser).my,
+		opponentCurrentNumber: getRoundSelectedNumbers(lastRound, myUser).opponent
 	};
 }) satisfies PageServerLoad;
 

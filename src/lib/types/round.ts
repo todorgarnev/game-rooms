@@ -29,3 +29,8 @@ export type Round = {
 	roundWinner: string;
 	moves: Move[];
 };
+
+export type RoundSelectedNumbers = {
+	my: number | null;
+	opponent: number | null;
+};

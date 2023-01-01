@@ -6,6 +6,9 @@
 	export let rounds: Round[];
 	export let opponentUsername: string;
 	export let winner: string | null;
+	export let availableNumbers: number[];
+	export let myCurrentNumber: number | null;
+	export let opponentCurrentNumber: number | null;
 
 	let selectedNumber: number;
 
@@ -27,9 +30,9 @@
 {:else}
 	<section class="top-section">
 		<form class="numbers" action="?/pick" method="POST" use:enhance={submitFormData}>
-			{#each Array.from({ length: 10 }, (_, i) => i + 1) as number}
+			{#each availableNumbers as number}
 				<button
-					class={`number${selectedNumber === number ? " selected" : ""}`}
+					class="number"
 					on:click={() => (selectedNumber = number)}
 					type="submit"
 				>
@@ -46,13 +49,11 @@
 
 	<section class="main-section">
 		<div>
-			You
-			<div>{selectedNumber ?? ""}</div>
+			You - {selectedNumber || myCurrentNumber || "?"}
 		</div>
 
 		<div>
-			{opponentUsername}
-			<div>{selectedNumber ?? ""}</div>
+			{opponentUsername} - {opponentCurrentNumber || "?"}
 		</div>
 	</section>
 {/if}
@@ -100,16 +101,6 @@
 					background-color: var(--primary-200);
 					cursor: pointer;
 				}
-
-				&.picked {
-					background-color: var(--error);
-					border-color: tomato;
-					cursor: not-allowed;
-				}
-
-				&.selected {
-					opacity: 0.4;
-				}
 			}
 		}
 
@@ -126,7 +117,7 @@
 	}
 
 	.main-section {
-		margin: 15rem 20rem 0;
+		margin-bottom: 5rem;
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 
