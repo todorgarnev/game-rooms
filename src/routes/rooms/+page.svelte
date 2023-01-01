@@ -43,8 +43,22 @@
 	<div>
 		<h3>Live rooms</h3>
 
-		{#if data.myRooms.length > 0}
+		{#if data.liveRooms.length > 0}
 			{#each data.liveRooms as room}
+				<button class="room-name" on:click={() => onRoomClick(room.id)}>
+					{room.name} - <span class={room.usernames.length === 2 ? "full" : ""}>{room.usernames.length}/2</span>
+				</button>
+			{/each}
+		{:else}
+			<p>No rooms available</p>
+		{/if}
+	</div>
+
+	<div>
+		<h3>Finished rooms</h3>
+
+		{#if data.finishedRooms.length > 0}
+			{#each data.finishedRooms as room}
 				<button class="room-name" on:click={() => onRoomClick(room.id)}>
 					{room.name} - <span class={room.usernames.length === 2 ? "full" : ""}>{room.usernames.length}/2</span>
 				</button>
@@ -77,7 +91,7 @@
 <style lang="postcss">
 	section {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
+		grid-template-columns: repeat(5, 1fr);
 
 		& h3 {
 			margin-bottom: 3rem;

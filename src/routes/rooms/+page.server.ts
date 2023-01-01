@@ -10,6 +10,7 @@ export const load = (async ({ locals }) => {
 	const activeRooms: Room[] = [];
 	const myRooms: Room[] = [];
 	const liveRooms: Room[] = [];
+	const finishedRooms: Room[] = [];
 
 	if (!locals.session) {
 		throw redirect(303, "/login");
@@ -17,13 +18,17 @@ export const load = (async ({ locals }) => {
 
 	const { data } = await locals.sb
 		.from("rooms")
-		.select("id, name, is_game_started, rooms_users(user_id(id, username))");
+		.select("id, name, is_game_started, winner(*), rooms_users(user_id(id, username))");
 
 	if (data) {
-		getRoomsInfo(data as ServerRoom[]).forEach((room: Room) => {
+		getRoomsInfo(data as ServerRoom[], locals.session.user.id).forEach((room: Room) => {
 			if (room.usersIds.includes(locals.session?.user.id ?? "")) {
 				if (room.isGameStarted) {
-					liveRooms.push(room);
+					if (room.winner) {
+						finishedRooms.push(room);
+					} else {
+						liveRooms.push(room);
+					}
 				} else {
 					myRooms.push(room);
 				}
@@ -36,7 +41,8 @@ export const load = (async ({ locals }) => {
 	return {
 		activeRooms,
 		myRooms,
-		liveRooms
+		liveRooms,
+		finishedRooms
 	};
 }) satisfies PageServerLoad;
 
