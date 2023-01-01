@@ -1,20 +1,24 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from "$app/forms";
+	import { fly } from "svelte/transition";
 	import { getCurrentScore } from "$lib/utils";
 	import type { Round } from "$lib/types";
 
 	export let rounds: Round[];
+	console.log("rounds: ", rounds);
 	export let opponentUsername: string;
 	export let winner: string | null;
 	export let availableNumbers: number[];
 	export let myCurrentNumber: number | null;
 	export let opponentCurrentNumber: number | null;
 
-	let selectedNumber: number;
+	let selectedNumber: number | null;
 
 	const submitFormData: SubmitFunction = ({ data }) => {
 		data.append("selectedNumber", String(selectedNumber));
 	};
+
+	$: selectedNumber = myCurrentNumber;
 </script>
 
 {#if winner}
@@ -31,11 +35,7 @@
 	<section class="top-section">
 		<form class="numbers" action="?/pick" method="POST" use:enhance={submitFormData}>
 			{#each availableNumbers as number}
-				<button
-					class="number"
-					on:click={() => (selectedNumber = number)}
-					type="submit"
-				>
+				<button class="number" on:click={() => (selectedNumber = number)} type="submit">
 					{number}
 				</button>
 			{/each}
@@ -49,11 +49,21 @@
 
 	<section class="main-section">
 		<div>
-			You - {selectedNumber || myCurrentNumber || "?"}
+			You -
+			{#key selectedNumber}
+				<span in:fly class="mine">
+					{selectedNumber || "?"}
+				</span>
+			{/key}
 		</div>
 
 		<div>
-			{opponentUsername} - {opponentCurrentNumber || "?"}
+			{opponentUsername} -
+			{#key opponentCurrentNumber}
+				<span in:fly class="opponent">
+					{opponentCurrentNumber || "?"}
+				</span>
+			{/key}
 		</div>
 	</section>
 {/if}
@@ -63,12 +73,24 @@
 		<div class="round-info">
 			<span>Round {round.roundNumber}</span>
 
-			<span class="round-picks">
-				<span>You picked {round.moves[0].selectedNumber}</span>
-				<span>{opponentUsername} picked {round.moves[1].selectedNumber}</span>
-			</span>
+			<div class="round-picks">
+				<span>
+					You picked
+					<span class="mine">{round.moves[0].selectedNumber}</span>
+				</span>
 
-			<span>Winner {round.roundWinner === opponentUsername ? opponentUsername : "You"}</span>
+				<span>
+					{opponentUsername} picked
+					<span class="opponent">{round.moves[1].selectedNumber}</span>
+				</span>
+			</div>
+
+			<div>
+				Winner
+				<span class={round.roundWinner === opponentUsername ? "mine" : "opponent"}>
+					{round.roundWinner === opponentUsername ? opponentUsername : "You"}
+				</span>
+			</div>
 		</div>
 	{/each}
 </section>
@@ -123,12 +145,16 @@
 
 		& div {
 			font-size: 5rem;
+
+			& span {
+				font-size: 6rem;
+				font-weight: bold;
+			}
 		}
 	}
 
 	.bottom-section {
-		& span {
-			display: inline-block;
+		& div {
 			font-size: 2rem;
 		}
 
@@ -140,9 +166,16 @@
 			border-bottom: 0.2rem solid var(--primary-100);
 
 			& .round-picks {
-				display: flex;
-				flex-direction: column;
+				display: grid;
 			}
 		}
+	}
+
+	.mine {
+		color: var(--primary-300);
+	}
+
+	.opponent {
+		color: var(--secondary-300);
 	}
 </style>

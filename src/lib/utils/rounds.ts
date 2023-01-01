@@ -88,6 +88,13 @@ export const getRoundSelectedNumbers = (
 	let myNumber: number | null = null;
 	let opponentNumber: number | null = null;
 
+	if (!currentRound) {
+		return {
+			my: myNumber,
+			opponent: opponentNumber
+		};
+	}
+
 	currentRound.moves.forEach((move: ServerMove) => {
 		if (move.user_id.id === myUser) {
 			myNumber = move.selected_number;
