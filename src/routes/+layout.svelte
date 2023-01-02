@@ -23,8 +23,6 @@
 				"postgres_changes",
 				{ event: "*", schema: "public", table: "rooms_users" },
 				(payload: any) => {
-					// TODO a better notification with precise room information
-					// will need additional supabase requests here
 					if (payload.eventType === "INSERT" && payload.new.user_id !== data.session?.user.id) {
 						showNewRoom.set(true);
 					}
