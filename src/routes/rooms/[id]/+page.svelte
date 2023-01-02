@@ -40,9 +40,8 @@
 		rounds={data.rounds}
 		opponentUsername={data.opponent}
 		winner={data.winner}
-		availableNumbers={data.availableNumbers}
-		myCurrentNumber={data.myCurrentNumber}
-		opponentCurrentNumber={data.opponentCurrentNumber}
+		myCurrentChoice={data.myCurrentChoice}
+		opponentCurrentChoice={data.opponentCurrentChoice}
 	/>
 {/if}
 

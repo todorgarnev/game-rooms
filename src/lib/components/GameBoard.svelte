@@ -2,23 +2,21 @@
 	import { enhance, type SubmitFunction } from "$app/forms";
 	import { fly } from "svelte/transition";
 	import { getCurrentScore } from "$lib/utils";
-	import type { Round } from "$lib/types";
+	import { GameType, type Round } from "$lib/types";
 
 	export let rounds: Round[];
-	console.log("rounds: ", rounds);
 	export let opponentUsername: string;
 	export let winner: string | null;
-	export let availableNumbers: number[];
-	export let myCurrentNumber: number | null;
-	export let opponentCurrentNumber: number | null;
+	export let myCurrentChoice: GameType | null;
+	export let opponentCurrentChoice: GameType | null;
 
-	let selectedNumber: number | null;
+	let userChoice: GameType | null;
 
 	const submitFormData: SubmitFunction = ({ data }) => {
-		data.append("selectedNumber", String(selectedNumber));
+		data.append("userChoice", String(userChoice));
 	};
 
-	$: selectedNumber = myCurrentNumber;
+	$: userChoice = myCurrentChoice;
 </script>
 
 {#if winner}
@@ -33,12 +31,31 @@
 	</section>
 {:else}
 	<section class="top-section">
-		<form class="numbers" action="?/pick" method="POST" use:enhance={submitFormData}>
-			{#each availableNumbers as number}
-				<button class="number" on:click={() => (selectedNumber = number)} type="submit">
-					{number}
-				</button>
-			{/each}
+		<form class="choices" action="?/pick" method="POST" use:enhance={submitFormData}>
+			<button type="submit" on:click={() => (userChoice = GameType.Rock)}>
+				<i class="fa fa-hand-rock-o" />
+				<p>Rock</p>
+			</button>
+
+			<button type="submit" on:click={() => (userChoice = GameType.Paper)}>
+				<i class="fa fa-hand-paper-o" />
+				<p>Paper</p>
+			</button>
+
+			<button type="submit" on:click={() => (userChoice = GameType.Scissors)}>
+				<i class="fa fa-hand-scissors-o" />
+				<p>Scissors</p>
+			</button>
+
+			<button type="submit" on:click={() => (userChoice = GameType.Lizard)}>
+				<i class="fa fa-hand-lizard-o" />
+				<p>Lizard</p>
+			</button>
+
+			<button type="submit" on:click={() => (userChoice = GameType.Spock)}>
+				<i class="fa fa-hand-spock-o" />
+				<p>Spock</p>
+			</button>
 		</form>
 
 		<div class="current-score">
@@ -50,18 +67,26 @@
 	<section class="main-section">
 		<div>
 			You -
-			{#key selectedNumber}
+			{#key userChoice}
 				<span in:fly class="mine">
-					{selectedNumber || "?"}
+					{#if userChoice}
+						<i class={`fa fa-hand-${userChoice}-o`} />
+					{:else}
+						?
+					{/if}
 				</span>
 			{/key}
 		</div>
 
 		<div>
 			{opponentUsername} -
-			{#key opponentCurrentNumber}
+			{#key opponentCurrentChoice}
 				<span in:fly class="opponent">
-					{opponentCurrentNumber || "?"}
+					{#if opponentCurrentChoice}
+						<i class={`fa fa-hand-${opponentCurrentChoice}-o`} />
+					{:else}
+						?
+					{/if}
 				</span>
 			{/key}
 		</div>
@@ -74,15 +99,15 @@
 			<span>Round {round.roundNumber}</span>
 
 			<div class="round-picks">
-				<span>
+				<div>
 					You picked
-					<span class="mine">{round.moves[0].selectedNumber}</span>
-				</span>
+					<i class={`mine fa fa-hand-${round.moves[0].userChoice}-o`} />
+				</div>
 
-				<span>
+				<div>
 					{opponentUsername} picked
-					<span class="opponent">{round.moves[1].selectedNumber}</span>
-				</span>
+					<i class={`opponent fa fa-hand-${round.moves[1].userChoice}-o`} />
+				</div>
 			</div>
 
 			<div>
@@ -108,31 +133,53 @@
 			font-weight: bold;
 		}
 
-		& .numbers {
-			display: flex;
-			justify-content: space-between;
-			text-align: left;
+		& .choices button {
+			display: inline-block;
+			background-color: transparent;
+			border: none;
 
-			& .number {
-				padding: 0 2rem;
-				color: rgb(26, 23, 23);
-				background-color: var(--primary-300);
-				border: 0.3rem solid var(--primary-100);
-
-				&:hover {
-					background-color: var(--primary-200);
-					cursor: pointer;
-				}
+			&:not(:last-child) {
+				margin-right: 5rem;
 			}
+
+			& p {
+				margin-top: 1rem;
+				font-size: 2rem;
+				color: var(--secondary-100);
+			}
+
+			& i {
+				padding: 2rem;
+				font-size: 6rem;
+				color: var(--secondary-100);
+				border: 0.6rem solid var(--secondary-100);
+				border-radius: 100%;
+				cursor: pointer;
+			}
+
+			& i:hover {
+				color: var(--secondary-300);
+				border-color: var(--secondary-300);
+			}
+
+			/* & .icon-option-selected {
+				font-size: 60px;
+				color: #f1c40f;
+				border-radius: 100px;
+				border: 6px solid #f1c40f;
+				cursor: pointer;
+				padding: 20px;
+			} */
 		}
 
 		& .current-score {
 			display: flex;
 			flex-direction: column;
-			font-size: 2rem;
+			justify-content: center;
+			font-size: 3rem;
 
 			& .result {
-				font-size: 3rem;
+				font-size: 6rem;
 				font-weight: bold;
 			}
 		}
@@ -144,11 +191,12 @@
 		grid-template-columns: repeat(2, 1fr);
 
 		& div {
+			display: flex;
+			justify-content: center;
 			font-size: 5rem;
 
 			& span {
-				font-size: 6rem;
-				font-weight: bold;
+				margin-left: 3rem;
 			}
 		}
 	}
@@ -165,8 +213,8 @@
 			align-items: center;
 			border-bottom: 0.2rem solid var(--primary-100);
 
-			& .round-picks {
-				display: grid;
+			& i {
+				margin-left: 1rem;
 			}
 		}
 	}

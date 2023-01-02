@@ -5,7 +5,7 @@ export type ServerMove = {
 		id: string;
 		username: string;
 	};
-	selected_number: number;
+	user_choice: GameType;
 	created_at: string;
 };
 
@@ -21,7 +21,7 @@ export type ServerRound = {
 
 export type Move = {
 	username: string;
-	selectedNumber: number;
+	userChoice: GameType;
 };
 
 export type Round = {
@@ -30,7 +30,15 @@ export type Round = {
 	moves: Move[];
 };
 
-export type RoundSelectedNumbers = {
-	my: number | null;
-	opponent: number | null;
+export type RoundChoices = {
+	my: GameType | null;
+	opponent: GameType | null;
 };
+
+export enum GameType {
+	Scissors = "scissors",
+	Paper = "paper",
+	Rock = "rock",
+	Lizard = "lizard",
+	Spock = "spock"
+}

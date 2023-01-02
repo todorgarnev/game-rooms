@@ -1,11 +1,10 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import {
 	canIMakeMove,
-	getAvailableNumbers,
 	getOpponentUsername,
 	getRoomInfo,
 	getRoomWinner,
-	getRoundSelectedNumbers,
+	getRoundChoices,
 	getRoundsInfo,
 	getRoundWinner,
 	isGameFinished
@@ -45,9 +44,8 @@ export const load = (async ({ params, locals }) => {
 		winner: currentRoom.winner,
 		isGameStarted: currentRoom.isGameStarted,
 		rounds: getRoundsInfo(roundsData as ServerRound[], locals.session?.user.id),
-		availableNumbers: getAvailableNumbers(roundsData as ServerRound[], myUser),
-		myCurrentNumber: getRoundSelectedNumbers(lastRound, myUser).my,
-		opponentCurrentNumber: getRoundSelectedNumbers(lastRound, myUser).opponent
+		myCurrentChoice: getRoundChoices(lastRound, myUser).my,
+		opponentCurrentChoice: getRoundChoices(lastRound, myUser).opponent
 	};
 }) satisfies PageServerLoad;
 
@@ -76,7 +74,7 @@ export const actions: Actions = {
 		await locals.sb.from("rooms").update({ is_game_started: true }).eq("id", params.id);
 	},
 	pick: async ({ request, locals, params }) => {
-		const { selectedNumber } = Object.fromEntries(await request.formData());
+		const { userChoice } = Object.fromEntries(await request.formData());
 
 		const { data: allRounds } = await locals.sb
 			.from("rounds")
@@ -101,7 +99,7 @@ export const actions: Actions = {
 					await locals.sb.from("moves").insert({
 						round_id: newRound?.id,
 						user_id: locals.session?.user.id,
-						selected_number: selectedNumber
+						user_choice: userChoice
 					});
 				} else {
 					const lastActiveRound: ServerRound = (allRounds as ServerRound[])[allRounds.length - 1];
@@ -117,7 +115,7 @@ export const actions: Actions = {
 						await locals.sb.from("moves").insert({
 							round_id: newRound?.id,
 							user_id: locals.session?.user.id,
-							selected_number: selectedNumber
+							user_choice: userChoice
 						});
 					} else if (canIMakeMove(lastActiveRound.moves, locals.session?.user.id as string)) {
 						await locals.sb
@@ -125,7 +123,7 @@ export const actions: Actions = {
 							.insert({
 								round_id: lastActiveRound.id,
 								user_id: locals.session?.user.id,
-								selected_number: selectedNumber
+								user_choice: userChoice
 							})
 							.select("round_id(moves(*))");
 

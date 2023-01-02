@@ -37,7 +37,6 @@
 		const roomsSb = supabaseClient
 			.channel("public:rooms")
 			.on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, (payload: any) => {
-				console.log("payload: ", payload);
 				// TODO a better notification with precise room information
 				// will need additional supabase requests here
 				// if (payload.eventType === "INSERT" && payload.new.user_id !== data.session?.user.id) {
@@ -54,8 +53,6 @@
 				"postgres_changes",
 				{ event: "UPDATE", schema: "public", table: "rounds" },
 				(payload: any) => {
-					console.log('payload: ', payload);
-
 					if (payload.new.round_winner) {
 						invalidateAll();
 					}

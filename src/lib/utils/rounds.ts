@@ -1,9 +1,54 @@
-import type { Move, Round, RoundSelectedNumbers, ServerMove, ServerRound } from "$lib/types";
+import { TOTAL_ROUNDS } from "$lib/constants";
+import {
+	GameType,
+	type Move,
+	type Round,
+	type RoundChoices,
+	type ServerMove,
+	type ServerRound
+} from "$lib/types";
 
 export const getRoundWinner = (moves: ServerMove[]): string => {
-	return moves[0].selected_number > moves[1].selected_number
-		? moves[0].user_id.id
-		: moves[1].user_id.id;
+	const myChoice: GameType = moves[0].user_choice;
+	const myId: string = moves[0].user_id.id;
+	const opponentChoice: GameType = moves[1].user_choice;
+	const opponentId: string = moves[1].user_id.id;
+
+	if (myChoice === opponentChoice) {
+		return "Tie";
+	} else if (myChoice === GameType.Scissors) {
+		if (opponentChoice === GameType.Paper || opponentChoice === GameType.Lizard) {
+			return myId;
+		} else {
+			return opponentId;
+		}
+	} else if (myChoice === GameType.Paper) {
+		if (opponentChoice === GameType.Rock || opponentChoice === GameType.Spock) {
+			return myId;
+		} else {
+			return opponentId;
+		}
+	} else if (myChoice === GameType.Rock) {
+		if (opponentChoice === GameType.Lizard || opponentChoice === GameType.Scissors) {
+			return myId;
+		} else {
+			return opponentId;
+		}
+	} else if (myChoice === GameType.Lizard) {
+		if (opponentChoice === GameType.Paper || opponentChoice === GameType.Spock) {
+			return myId;
+		} else {
+			return opponentId;
+		}
+	} else if (myChoice === GameType.Spock) {
+		if (opponentChoice === GameType.Scissors || opponentChoice === GameType.Rock) {
+			return myId;
+		} else {
+			return opponentId;
+		}
+	}
+
+	return "";
 };
 
 export const getRoomWinner = (currentRounds: ServerRound[]): string => {
@@ -56,56 +101,34 @@ export const isGameFinished = (currentRounds: ServerRound[]): boolean => {
 		const lastRoundNumber: number = currentRounds[currentRounds.length - 1].round_number;
 		const isLastRoundFinished: boolean = currentRounds[currentRounds.length - 1].moves.length === 2;
 
-		return lastRoundNumber === 9 && isLastRoundFinished;
+		return lastRoundNumber === TOTAL_ROUNDS && isLastRoundFinished;
 	}
 
 	return false;
 };
 
-export const getAvailableNumbers = (currentRounds: ServerRound[], myUser: string): number[] => {
-	const allNumbers: number[] = Array.from({ length: 10 }, (_, i) => i + 1);
-	const selectedNumbers: number[] = [];
-
-	if (currentRounds.length === 0) {
-		return allNumbers;
-	}
-
-	currentRounds.forEach((round: ServerRound) => {
-		round.moves.forEach((move: ServerMove) => {
-			if (move.user_id.id === myUser) {
-				selectedNumbers.push(move.selected_number);
-			}
-		});
-	});
-
-	return allNumbers.filter((x: number) => !selectedNumbers.includes(x));
-};
-
-export const getRoundSelectedNumbers = (
-	currentRound: ServerRound,
-	myUser: string
-): RoundSelectedNumbers => {
-	let myNumber: number | null = null;
-	let opponentNumber: number | null = null;
+export const getRoundChoices = (currentRound: ServerRound, myUser: string): RoundChoices => {
+	let myChoice: GameType | null = null;
+	let opponentChoice: GameType | null = null;
 
 	if (!currentRound) {
 		return {
-			my: myNumber,
-			opponent: opponentNumber
+			my: myChoice,
+			opponent: opponentChoice
 		};
 	}
 
 	currentRound.moves.forEach((move: ServerMove) => {
 		if (move.user_id.id === myUser) {
-			myNumber = move.selected_number;
+			myChoice = move.user_choice;
 		} else {
-			opponentNumber = move.selected_number;
+			opponentChoice = move.user_choice;
 		}
 	});
 
 	return {
-		my: myNumber,
-		opponent: opponentNumber
+		my: myChoice,
+		opponent: opponentChoice
 	};
 };
 
@@ -116,12 +139,12 @@ const sortMoves = (moves: ServerMove[], myUserId: string): Move[] => {
 		if (move.user_id.id === myUserId) {
 			sortedMoves[0] = {
 				username: move.user_id.username,
-				selectedNumber: move.selected_number
+				userChoice: move.user_choice
 			};
 		} else {
 			sortedMoves[1] = {
 				username: move.user_id.username,
-				selectedNumber: move.selected_number
+				userChoice: move.user_choice
 			};
 		}
 	});
