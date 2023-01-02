@@ -34,7 +34,7 @@
 
 		const roomsSb = supabaseClient
 			.channel("public:rooms")
-			.on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, (payload: any) => {
+			.on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, () => {
 				// TODO a better notification with precise room information
 				// will need additional supabase requests here
 				// if (payload.eventType === "INSERT" && payload.new.user_id !== data.session?.user.id) {
@@ -58,15 +58,11 @@
 			)
 			.subscribe();
 
-			const movesSb = supabaseClient
+		const movesSb = supabaseClient
 			.channel("public:moves")
-			.on(
-				"postgres_changes",
-				{ event: "INSERT", schema: "public", table: "moves" },
-				(payload: any) => {
-						invalidateAll();
-				}
-			)
+			.on("postgres_changes", { event: "INSERT", schema: "public", table: "moves" }, () => {
+				invalidateAll();
+			})
 			.subscribe();
 
 		return () => {
