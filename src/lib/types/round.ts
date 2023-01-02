@@ -17,6 +17,7 @@ export type ServerRound = {
 		username: string;
 	};
 	moves: ServerMove[];
+	is_tie: boolean | null;
 };
 
 export type Move = {
@@ -40,5 +41,6 @@ export enum GameType {
 	Paper = "paper",
 	Rock = "rock",
 	Lizard = "lizard",
-	Spock = "spock"
+	Spock = "spock",
+	Tie = "tie"
 }

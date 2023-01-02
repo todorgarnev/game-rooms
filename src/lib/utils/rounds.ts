@@ -8,14 +8,14 @@ import {
 	type ServerRound
 } from "$lib/types";
 
-export const getRoundWinner = (moves: ServerMove[]): string => {
+export const getRoundWinner = (moves: ServerMove[]): string | null => {
 	const myChoice: GameType = moves[0].user_choice;
 	const myId: string = moves[0].user_id.id;
 	const opponentChoice: GameType = moves[1].user_choice;
 	const opponentId: string = moves[1].user_id.id;
 
 	if (myChoice === opponentChoice) {
-		return "Tie";
+		return null;
 	} else if (myChoice === GameType.Scissors) {
 		if (opponentChoice === GameType.Paper || opponentChoice === GameType.Lizard) {
 			return myId;
@@ -73,10 +73,10 @@ export const canIMakeMove = (moves: ServerMove[], myUserId: string): boolean => 
 
 export const getRoundsInfo = (roundsData: ServerRound[], myUserId: string): Round[] => {
 	return roundsData
-		.filter((round: ServerRound) => !!round.round_winner)
+		.filter((round: ServerRound) => !!round.round_winner || !!round.is_tie)
 		.map((round: ServerRound) => ({
 			roundNumber: round.round_number,
-			roundWinner: round.round_winner.username,
+			roundWinner: round.round_winner ? round.round_winner.username : "tie",
 			moves: sortMoves(round.moves, myUserId)
 		}));
 };

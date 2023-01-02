@@ -30,7 +30,7 @@ export const load = (async ({ params, locals }) => {
 
 	const { data: roundsData } = await locals.sb
 		.from("rounds")
-		.select("*, round_winner(id, username), moves(*, user_id(id, username))")
+		.select("*, is_tie, round_winner(id, username), moves(*, user_id(id, username))")
 		.eq("room_id", (params as { id: string }).id);
 	const lastRound: ServerRound = (roundsData as ServerRound[])[
 		(roundsData as ServerRound[]).length - 1
@@ -80,6 +80,7 @@ export const actions: Actions = {
 			.from("rounds")
 			.select("id, round_number, round_winner(id, username), moves(*, user_id(id))")
 			.eq("room_id", params.id);
+		console.log("allRounds: ", allRounds);
 
 		if (allRounds) {
 			if (isGameFinished(allRounds as ServerRound[])) {
@@ -134,10 +135,13 @@ export const actions: Actions = {
 							.limit(1)
 							.single();
 
-						if (lastRound && !lastActiveRound.round_winner) {
+						if (lastRound && !lastActiveRound.round_winner && !lastActiveRound.is_tie) {
 							await locals.sb
 								.from("rounds")
-								.update({ round_winner: getRoundWinner(lastRound.moves) })
+								.update({
+									round_winner: getRoundWinner(lastRound.moves),
+									is_tie: getRoundWinner(lastRound.moves) ? false : true
+								})
 								.eq("id", lastActiveRound.id);
 						}
 					}

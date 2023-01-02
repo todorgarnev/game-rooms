@@ -53,7 +53,7 @@
 				"postgres_changes",
 				{ event: "UPDATE", schema: "public", table: "rounds" },
 				(payload: any) => {
-					if (payload.new.round_winner) {
+					if (payload.new.round_winner || payload.new.is_tie) {
 						invalidateAll();
 					}
 				}

@@ -112,8 +112,18 @@
 
 			<div>
 				Winner
-				<span class={round.roundWinner === opponentUsername ? "mine" : "opponent"}>
-					{round.roundWinner === opponentUsername ? opponentUsername : "You"}
+				<span
+					class={round.roundWinner === GameType.Tie
+						? "tie"
+						: round.roundWinner === opponentUsername
+						? "mine"
+						: "opponent"}
+				>
+					{round.roundWinner === GameType.Tie
+						? "Tie"
+						: round.roundWinner === opponentUsername
+						? opponentUsername
+						: "You"}
 				</span>
 			</div>
 		</div>
@@ -225,5 +235,9 @@
 
 	.opponent {
 		color: var(--secondary-300);
+	}
+
+	.tie {
+		color: dodgerblue;
 	}
 </style>
