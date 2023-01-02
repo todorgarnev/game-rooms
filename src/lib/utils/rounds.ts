@@ -1,4 +1,4 @@
-import { TOTAL_ROUNDS } from "$lib/constants";
+import { WIN_ROUNDS } from "$lib/constants";
 import {
 	GameType,
 	type Move,
@@ -51,20 +51,41 @@ export const getRoundWinner = (moves: ServerMove[]): string | null => {
 	return "";
 };
 
-export const getRoomWinner = (currentRounds: ServerRound[]): string => {
+export const getRoomWinner = (currentRounds: ServerRound[]): string | null => {
 	const winnersMap = new Map<string, number>([]);
 
 	currentRounds.forEach((round: ServerRound) => {
-		if (winnersMap.has(round.round_winner.id)) {
-			winnersMap.set(round.round_winner.id, (winnersMap.get(round.round_winner.id) as number) + 1);
-		} else {
-			winnersMap.set(round.round_winner.id, 1);
+		if (round.round_winner) {
+			if (winnersMap.has(round.round_winner.id)) {
+				winnersMap.set(
+					round.round_winner.id,
+					(winnersMap.get(round.round_winner.id) as number) + 1
+				);
+			} else {
+				winnersMap.set(round.round_winner.id, 1);
+			}
 		}
 	});
 
-	const [[firstUser, firstUserRounds], [secondUser, secondUserRounds]] = winnersMap.entries();
+	console.log("winnersMap.size: ", winnersMap.entries());
+	if (winnersMap.size > 0) {
+		const [[firstUser, firstUserRounds], ...rest] = winnersMap.entries();
+		console.log("rest: ", rest);
 
-	return firstUserRounds > secondUserRounds ? firstUser : secondUser;
+		if (firstUserRounds === WIN_ROUNDS) {
+			return firstUser;
+		}
+
+		if (rest.length > 0) {
+			const [[secondUser, secondUserRounds]] = rest;
+
+			if (secondUserRounds === WIN_ROUNDS) {
+				return secondUser;
+			}
+		}
+	}
+
+	return null;
 };
 
 export const canIMakeMove = (moves: ServerMove[], myUserId: string): boolean => {
@@ -86,25 +107,16 @@ export const getCurrentScore = (currentRounds: Round[], opponentUsername: string
 	let opponentRounds = 0;
 
 	currentRounds.forEach((round: Round) => {
-		if (round.roundWinner === opponentUsername) {
-			opponentRounds += 1;
-		} else {
-			myRounds += 1;
+		if (round.roundWinner !== GameType.Tie) {
+			if (round.roundWinner === opponentUsername) {
+				opponentRounds += 1;
+			} else {
+				myRounds += 1;
+			}
 		}
 	});
 
 	return currentRounds.length > 0 ? `${myRounds}:${opponentRounds}` : "0:0";
-};
-
-export const isGameFinished = (currentRounds: ServerRound[]): boolean => {
-	if (currentRounds.length > 1) {
-		const lastRoundNumber: number = currentRounds[currentRounds.length - 1].round_number;
-		const isLastRoundFinished: boolean = currentRounds[currentRounds.length - 1].moves.length === 2;
-
-		return lastRoundNumber === TOTAL_ROUNDS && isLastRoundFinished;
-	}
-
-	return false;
 };
 
 export const getRoundChoices = (currentRound: ServerRound, myUser: string): RoundChoices => {

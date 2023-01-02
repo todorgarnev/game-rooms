@@ -1,1 +1,1 @@
-export const TOTAL_ROUNDS = 9;
+export const WIN_ROUNDS = 5;

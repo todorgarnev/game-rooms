@@ -6,8 +6,7 @@ import {
 	getRoomWinner,
 	getRoundChoices,
 	getRoundsInfo,
-	getRoundWinner,
-	isGameFinished
+	getRoundWinner
 } from "$lib/utils";
 import type { Room, ServerRoom, ServerRound } from "$lib/types";
 import type { PageServerLoad } from "../$types";
@@ -80,19 +79,28 @@ export const actions: Actions = {
 			.from("rounds")
 			.select("id, round_number, round_winner(id, username), moves(*, user_id(id))")
 			.eq("room_id", params.id);
-		console.log("allRounds: ", allRounds);
 
 		if (allRounds) {
-			if (isGameFinished(allRounds as ServerRound[])) {
-				await locals.sb
-					.from("rooms")
-					.update({ winner: getRoomWinner(allRounds as ServerRound[]) })
-					.eq("id", params.id);
+			if (allRounds.length === 0) {
+				const { data: newRound } = await locals.sb
+					.from("rounds")
+					.insert({ room_id: params.id, round_number: 1 })
+					.select()
+					.limit(1)
+					.single();
+
+				await locals.sb.from("moves").insert({
+					round_id: newRound?.id,
+					user_id: locals.session?.user.id,
+					user_choice: userChoice
+				});
 			} else {
-				if (allRounds.length === 0) {
+				const lastActiveRound: ServerRound = (allRounds as ServerRound[])[allRounds.length - 1];
+
+				if (lastActiveRound.moves.length === 2) {
 					const { data: newRound } = await locals.sb
 						.from("rounds")
-						.insert({ room_id: params.id, round_number: 1 })
+						.insert({ room_id: params.id, round_number: lastActiveRound.round_number + 1 })
 						.select()
 						.limit(1)
 						.single();
@@ -102,50 +110,45 @@ export const actions: Actions = {
 						user_id: locals.session?.user.id,
 						user_choice: userChoice
 					});
-				} else {
-					const lastActiveRound: ServerRound = (allRounds as ServerRound[])[allRounds.length - 1];
-
-					if (lastActiveRound.moves.length === 2) {
-						const { data: newRound } = await locals.sb
-							.from("rounds")
-							.insert({ room_id: params.id, round_number: lastActiveRound.round_number + 1 })
-							.select()
-							.limit(1)
-							.single();
-
-						await locals.sb.from("moves").insert({
-							round_id: newRound?.id,
+				} else if (canIMakeMove(lastActiveRound.moves, locals.session?.user.id as string)) {
+					await locals.sb
+						.from("moves")
+						.insert({
+							round_id: lastActiveRound.id,
 							user_id: locals.session?.user.id,
 							user_choice: userChoice
-						});
-					} else if (canIMakeMove(lastActiveRound.moves, locals.session?.user.id as string)) {
+						})
+						.select("round_id(moves(*))");
+
+					const { data: lastRound } = await locals.sb
+						.from("rounds")
+						.select("moves(*, user_id(id, username))")
+						.eq("id", lastActiveRound.id)
+						.limit(1)
+						.single();
+
+					if (lastRound && !lastActiveRound.round_winner && !lastActiveRound.is_tie) {
 						await locals.sb
-							.from("moves")
-							.insert({
-								round_id: lastActiveRound.id,
-								user_id: locals.session?.user.id,
-								user_choice: userChoice
-							})
-							.select("round_id(moves(*))");
-
-						const { data: lastRound } = await locals.sb
 							.from("rounds")
-							.select("moves(*, user_id(id, username))")
-							.eq("id", lastActiveRound.id)
-							.limit(1)
-							.single();
-
-						if (lastRound && !lastActiveRound.round_winner && !lastActiveRound.is_tie) {
-							await locals.sb
-								.from("rounds")
-								.update({
-									round_winner: getRoundWinner(lastRound.moves),
-									is_tie: getRoundWinner(lastRound.moves) ? false : true
-								})
-								.eq("id", lastActiveRound.id);
-						}
+							.update({
+								round_winner: getRoundWinner(lastRound.moves),
+								is_tie: getRoundWinner(lastRound.moves) ? false : true
+							})
+							.eq("id", lastActiveRound.id);
 					}
 				}
+			}
+
+			const { data: latestRounds } = await locals.sb
+				.from("rounds")
+				.select("id, round_winner(id, username)")
+				.eq("room_id", params.id);
+
+			if (latestRounds && getRoomWinner(latestRounds as ServerRound[])) {
+				await locals.sb
+					.from("rooms")
+					.update({ winner: getRoomWinner(latestRounds as ServerRound[]) })
+					.eq("id", params.id);
 			}
 		}
 	}

@@ -24,9 +24,6 @@
 		<div>
 			Game winner:
 			<span class="winner">{winner}</span>
-			with
-			<span class="winner">{getCurrentScore(rounds, opponentUsername)}</span>
-			rounds
 		</div>
 	</section>
 {:else}
