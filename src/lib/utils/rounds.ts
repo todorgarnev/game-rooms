@@ -67,10 +67,8 @@ export const getRoomWinner = (currentRounds: ServerRound[]): string | null => {
 		}
 	});
 
-	console.log("winnersMap.size: ", winnersMap.entries());
 	if (winnersMap.size > 0) {
 		const [[firstUser, firstUserRounds], ...rest] = winnersMap.entries();
-		console.log("rest: ", rest);
 
 		if (firstUserRounds === WIN_ROUNDS) {
 			return firstUser;

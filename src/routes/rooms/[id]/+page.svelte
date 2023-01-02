@@ -42,6 +42,8 @@
 		winner={data.winner}
 		myCurrentChoice={data.myCurrentChoice}
 		opponentCurrentChoice={data.opponentCurrentChoice}
+		currentRound={data.currentRound}
+		myUserId={data.myUserId}
 	/>
 {/if}
 

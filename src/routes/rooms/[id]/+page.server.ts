@@ -27,6 +27,10 @@ export const load = (async ({ params, locals }) => {
 
 	const currentRoom: Room = getRoomInfo(roomData as ServerRoom, myUser);
 
+	if (currentRoom.isGameStarted && !currentRoom.usersIds.includes(myUser)) {
+		throw redirect(303, "/");
+	}
+
 	const { data: roundsData } = await locals.sb
 		.from("rounds")
 		.select("*, is_tie, round_winner(id, username), moves(*, user_id(id, username))")
@@ -44,7 +48,9 @@ export const load = (async ({ params, locals }) => {
 		isGameStarted: currentRoom.isGameStarted,
 		rounds: getRoundsInfo(roundsData as ServerRound[], locals.session?.user.id),
 		myCurrentChoice: getRoundChoices(lastRound, myUser).my,
-		opponentCurrentChoice: getRoundChoices(lastRound, myUser).opponent
+		opponentCurrentChoice: getRoundChoices(lastRound, myUser).opponent,
+		currentRound: lastRound,
+		myUserId: locals.session.user.id
 	};
 }) satisfies PageServerLoad;
 
