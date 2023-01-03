@@ -11,6 +11,7 @@ declare global {
 			sb: TypedSupabaseClient;
 			session: Session | null;
 			username: string | null;
+			myId: string | null;
 		}
 		interface PageData {
 			session: import("@supabase/supabase-js").Session | null;

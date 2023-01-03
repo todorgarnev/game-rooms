@@ -29,12 +29,12 @@ export const actions: Actions = {
 				const { error } = await locals.sb
 					.from("profiles")
 					.update({ username: body.username })
-					.eq("id", locals.session?.user.id);
+					.eq("id", locals.myId);
 				err = error;
 			} else {
 				const { error } = await locals.sb
 					.from("profiles")
-					.insert({ id: locals.session?.user.id, username: body.username });
+					.insert({ id: locals.myId, username: body.username });
 				err = error;
 			}
 

@@ -16,8 +16,6 @@ export const load = (async ({ params, locals }) => {
 		throw redirect(303, "/login");
 	}
 
-	const myUser: string = locals.session.user.id;
-
 	const { data: roomData } = await locals.sb
 		.from("rooms")
 		.select("*, rooms_users(user_id(id, username)), winner(id, username)")
@@ -25,9 +23,9 @@ export const load = (async ({ params, locals }) => {
 		.limit(1)
 		.single();
 
-	const currentRoom: Room = getRoomInfo(roomData as ServerRoom, myUser);
+	const currentRoom: Room = getRoomInfo(roomData as ServerRoom, locals.myId as string);
 
-	if (currentRoom.isGameStarted && !currentRoom.usersIds.includes(myUser)) {
+	if (currentRoom.isGameStarted && !currentRoom.usersIds.includes(locals.myId as string)) {
 		throw redirect(303, "/");
 	}
 
@@ -43,14 +41,14 @@ export const load = (async ({ params, locals }) => {
 		name: currentRoom.name,
 		usersIds: currentRoom.usersIds,
 		usernames: currentRoom.usernames,
-		opponent: getOpponentUsername(roomData, locals.session?.user.id),
+		opponent: getOpponentUsername(roomData, locals.myId as string),
 		winner: currentRoom.winner,
 		isGameStarted: currentRoom.isGameStarted,
-		rounds: getRoundsInfo(roundsData as ServerRound[], locals.session?.user.id),
-		myCurrentChoice: getRoundChoices(lastRound, myUser).my,
-		opponentCurrentChoice: getRoundChoices(lastRound, myUser).opponent,
+		rounds: getRoundsInfo(roundsData as ServerRound[], locals.myId as string),
+		myCurrentChoice: getRoundChoices(lastRound, locals.myId as string).my,
+		opponentCurrentChoice: getRoundChoices(lastRound, locals.myId as string).opponent,
 		currentRound: lastRound,
-		myUserId: locals.session.user.id
+		myUserId: locals.myId
 	};
 }) satisfies PageServerLoad;
 
@@ -58,7 +56,7 @@ export const actions: Actions = {
 	join: async ({ locals, params }) => {
 		await locals.sb
 			.from("rooms_users")
-			.insert({ room_id: params.id, user_id: locals.session?.user.id })
+			.insert({ room_id: params.id, user_id: locals.myId as string })
 			.select();
 	},
 	leave: async ({ locals, params }) => {
@@ -66,7 +64,7 @@ export const actions: Actions = {
 			.from("rooms_users")
 			.select("id")
 			.eq("room_id", params.id)
-			.eq("user_id", locals.session?.user.id)
+			.eq("user_id", locals.myId as string)
 			.limit(1)
 			.single();
 
@@ -97,7 +95,7 @@ export const actions: Actions = {
 
 				await locals.sb.from("moves").insert({
 					round_id: newRound?.id,
-					user_id: locals.session?.user.id,
+					user_id: locals.myId as string,
 					user_choice: userChoice
 				});
 			} else {
@@ -113,15 +111,15 @@ export const actions: Actions = {
 
 					await locals.sb.from("moves").insert({
 						round_id: newRound?.id,
-						user_id: locals.session?.user.id,
+						user_id: locals.myId as string,
 						user_choice: userChoice
 					});
-				} else if (canIMakeMove(lastActiveRound.moves, locals.session?.user.id as string)) {
+				} else if (canIMakeMove(lastActiveRound.moves, locals.myId as string)) {
 					await locals.sb
 						.from("moves")
 						.insert({
 							round_id: lastActiveRound.id,
-							user_id: locals.session?.user.id,
+							user_id: locals.myId,
 							user_choice: userChoice
 						})
 						.select("round_id(moves(*))");

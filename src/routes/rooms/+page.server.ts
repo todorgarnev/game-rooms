@@ -21,8 +21,8 @@ export const load = (async ({ locals }) => {
 		.select("id, name, is_game_started, winner(*), rooms_users(user_id(id, username))");
 
 	if (data) {
-		getRoomsInfo(data as ServerRoom[], locals.session.user.id).forEach((room: Room) => {
-			if (room.usersIds.includes(locals.session?.user.id ?? "")) {
+		getRoomsInfo(data as ServerRoom[], locals.myId as string).forEach((room: Room) => {
+			if (room.usersIds.includes(locals.myId as string)) {
 				if (room.isGameStarted) {
 					if (room.winner) {
 						finishedRooms.push(room);
@@ -61,9 +61,7 @@ export const actions: Actions = {
 				.select();
 
 			if (data && data.length > 0) {
-				await locals.sb
-					.from("rooms_users")
-					.insert({ room_id: data[0].id, user_id: locals.session?.user.id });
+				await locals.sb.from("rooms_users").insert({ room_id: data[0].id, user_id: locals.myId });
 			}
 
 			if (err) {
