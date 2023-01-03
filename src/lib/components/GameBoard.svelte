@@ -91,7 +91,7 @@
 			{opponentUsername} -
 			{#key opponentCurrentChoice}
 				<span in:fly class="opponent">
-					{#if opponentCurrentChoice}
+					{#if opponentCurrentChoice && currentRound.moves.length === 2}
 						<i class={`fa fa-hand-${opponentCurrentChoice}-o`} />
 					{:else}
 						?
