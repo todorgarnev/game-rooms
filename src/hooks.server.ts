@@ -7,6 +7,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	event.locals.sb = supabaseClient;
 	event.locals.session = session;
+	event.locals.myId = session ? session.user.id : null;
 
 	if (session?.user.id) {
 		const { data } = await supabaseClient
@@ -17,7 +18,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 			.single();
 
 		event.locals.username = data ? data.username : null;
-		event.locals.myId = data ? session.user.id : null;
 	}
 
 	return resolve(event);
