@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { enhance, type SubmitFunction } from "$app/forms";
 	import { supabaseClient } from "$lib/supabase/supabase";
+	import type { PageData } from "../../routes/$types";
 
+	export let pageData: PageData;
 	export let isLoggedIn: boolean;
 
 	const submitLogout: SubmitFunction = async ({ cancel }) => {
@@ -13,7 +15,11 @@
 <nav>
 	{#if isLoggedIn}
 		<a href="/" class="nav-item home">HOME</a>
-		<a href="/rooms" class="nav-item">Rooms</a>
+
+		{#if pageData.username}
+			<a href="/rooms" class="nav-item">Rooms</a>
+		{/if}
+
 		<a href="/profile" class="nav-item">Profile</a>
 		<form action="/logout" method="POST" use:enhance={submitLogout}>
 			<button type="submit" class="nav-item">Logout</button>

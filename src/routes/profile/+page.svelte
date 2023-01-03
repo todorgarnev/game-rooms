@@ -1,20 +1,21 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import { username } from "$lib/stores/user";
 	import type { ActionData, PageData } from "./$types";
 
 	export let form: ActionData;
 	export let data: PageData;
-
-	$: username.set(data.username);
 </script>
+
+<svelte:head>
+	<title>Profile</title>
+</svelte:head>
 
 <form action="?/update" method="POST" use:enhance>
 	<input
 		class={form?.errors?.username ? "input-error" : ""}
 		type="text"
 		name="username"
-		value={form?.data?.username || data.username}
+		value={data.username}
 	/>
 
 	{#if form?.errors?.username}

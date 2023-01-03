@@ -6,6 +6,10 @@
 	export let data: PageData;
 </script>
 
+<svelte:head>
+	<title>Playing Room</title>
+</svelte:head>
+
 <section class="header-section">
 	<div>
 		<h3>Room name: <span>{data.name}</span></h3>

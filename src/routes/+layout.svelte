@@ -75,7 +75,7 @@
 	});
 </script>
 
-<Navigation isLoggedIn={!!data.session?.user} />
+<Navigation isLoggedIn={!!data.session?.user} pageData={data} />
 
 <main>
 	<slot />

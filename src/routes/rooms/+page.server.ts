@@ -12,7 +12,7 @@ export const load = (async ({ locals }) => {
 	const liveRooms: Room[] = [];
 	const finishedRooms: Room[] = [];
 
-	if (!locals.session) {
+	if (!locals.session || !locals.username) {
 		throw redirect(303, "/login");
 	}
 

@@ -8,5 +8,16 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.sb = supabaseClient;
 	event.locals.session = session;
 
+	if (session?.user.id) {
+		const { data } = await supabaseClient
+			.from("profiles")
+			.select()
+			.eq("id", session.user.id)
+			.limit(1)
+			.single();
+
+		event.locals.username = data ? data.username : null;
+	}
+
 	return resolve(event);
 };

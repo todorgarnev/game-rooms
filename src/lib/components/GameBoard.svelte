@@ -48,7 +48,7 @@
 						<i class="fa fa-hand-paper-o" />
 						<p>Paper</p>
 					</button>
-
+<!-- try to user formaction -->
 					<button type="submit" on:click={() => (userChoice = GameType.Scissors)}>
 						<i class="fa fa-hand-scissors-o" />
 						<p>Scissors</p>

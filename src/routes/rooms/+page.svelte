@@ -11,6 +11,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Rooms</title>
+</svelte:head>
+
 <section>
 	<div>
 		<h3>Active rooms</h3>

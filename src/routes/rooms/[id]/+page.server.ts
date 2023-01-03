@@ -12,7 +12,7 @@ import type { Room, ServerRoom, ServerRound } from "$lib/types";
 import type { PageServerLoad } from "../$types";
 
 export const load = (async ({ params, locals }) => {
-	if (!locals.session) {
+	if (!locals.session || !locals.username) {
 		throw redirect(303, "/login");
 	}
 
