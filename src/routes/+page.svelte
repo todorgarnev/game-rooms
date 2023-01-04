@@ -18,10 +18,10 @@
 	<p class="welcome">Welcome, {data.username || data.session.user.email}</p>
 
 	{#if !data.username}
-		<div class="set-username">
+		<p class="set-username">
 			You should set your username first. <br /> You can do it in <b>Profile</b> page or click
 			<a href="/profile">here</a>
-		</div>
+		</p>
 	{:else}
 		<div class="rules">
 			Here you can create a <a href="/rooms">room</a> or join already existing one. <br />
@@ -54,6 +54,16 @@
 				{/if}
 			</details>
 		</div>
+
+		<iframe
+			width="1070"
+			height="713"
+			src="https://www.youtube.com/embed/Kov2G0GouBw"
+			title="Rock Paper scissors  Lizard Spock"
+			frameborder="0"
+			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+			allowfullscreen
+		/>
 	{/if}
 {:else}
 	<p>
@@ -87,13 +97,15 @@
 		}
 	}
 
-	.set-username {
-		margin-top: 5rem;
-		font-size: 2rem;
+	iframe {
+		width: 30vmax;
+		height: calc(30vmax / 1.5);
 	}
 
+	ul,
+	iframe,
 	.rules,
-	ul {
+	.set-username {
 		margin-top: 5rem;
 	}
 </style>
