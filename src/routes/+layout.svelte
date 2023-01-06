@@ -2,7 +2,7 @@
 	import { onMount } from "svelte";
 	import { invalidateAll } from "$app/navigation";
 	import { supabaseClient } from "$lib/supabase/supabase";
-	import { showNewRoom } from "$lib/stores/notification";
+	import { notificationText } from "$lib/stores/notification";
 	import Notification from "$lib/components/Notification.svelte";
 	import Navigation from "$lib/components/Navigation.svelte";
 	import type { PageData } from "./$types";
@@ -19,27 +19,10 @@
 
 		const roomsUsersSb = supabaseClient
 			.channel("public:rooms_users")
-			.on(
-				"postgres_changes",
-				{ event: "*", schema: "public", table: "rooms_users" },
-				(payload: any) => {
-					if (payload.eventType === "INSERT" && payload.new.user_id !== data.session?.user.id) {
-						showNewRoom.set(true);
-					}
-
-					invalidateAll();
+			.on("postgres_changes", { event: "*", schema: "public", table: "rooms_users" }, (payload) => {
+				if (payload.eventType === "INSERT" && payload.new.user_id !== data.session?.user.id) {
+					notificationText.set("New room has been added or player joined a room");
 				}
-			)
-			.subscribe();
-
-		const roomsSb = supabaseClient
-			.channel("public:rooms")
-			.on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, () => {
-				// TODO a better notification with precise room information
-				// will need additional supabase requests here
-				// if (payload.eventType === "INSERT" && payload.new.user_id !== data.session?.user.id) {
-				// 	showNewRoom.set(true);
-				// }
 
 				invalidateAll();
 			})
@@ -47,20 +30,21 @@
 
 		const roundsSb = supabaseClient
 			.channel("public:rounds")
-			.on(
-				"postgres_changes",
-				{ event: "UPDATE", schema: "public", table: "rounds" },
-				(payload: any) => {
-					if (payload.new.round_winner || payload.new.is_tie) {
-						invalidateAll();
-					}
+			.on("postgres_changes", { event: "UPDATE", schema: "public", table: "rounds" }, (payload) => {
+				if (payload.new.round_winner || payload.new.is_tie) {
+					invalidateAll();
 				}
-			)
+			})
 			.subscribe();
 
 		const movesSb = supabaseClient
 			.channel("public:moves")
-			.on("postgres_changes", { event: "INSERT", schema: "public", table: "moves" }, () => {
+			.on("postgres_changes", { event: "INSERT", schema: "public", table: "moves" }, (payload) => {
+				console.log("payload: ", payload);
+				if (payload.eventType === "INSERT" && payload.new.user_id !== data.session?.user.id) {
+					notificationText.set("Player chose a hand in one of your rooms");
+				}
+
 				invalidateAll();
 			})
 			.subscribe();
@@ -68,7 +52,6 @@
 		return () => {
 			subscription.unsubscribe();
 			roomsUsersSb.unsubscribe();
-			roomsSb.unsubscribe();
 			roundsSb.unsubscribe();
 			movesSb.unsubscribe();
 		};

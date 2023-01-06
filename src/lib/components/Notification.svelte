@@ -1,39 +1,32 @@
 <script lang="ts">
-	import { showNewRoom } from "../stores/notification";
+	import { notificationText } from "../stores/notification";
 
 	const clearNotification = () => {
 		setTimeout(() => {
-			showNewRoom.set(false);
+			notificationText.set(null);
 		}, 3000);
 	};
 
-	const closeNotification = () => showNewRoom.set(false);
-
-	$: if ($showNewRoom) clearNotification();
+	$: if ($notificationText) clearNotification();
 </script>
 
-{#if $showNewRoom}
+{#if $notificationText}
 	<div class="notification">
-		<span> New room has been added!</span>
-		<a href="/rooms" on:click={closeNotification}>Go to rooms page</a>
+		<span>{$notificationText}</span>
 	</div>
 {/if}
 
 <style lang="postcss">
 	.notification {
 		position: fixed;
-		right: 2rem;
-		top: 2rem;
+		left: 50%;
+		top: 5rem;
 		padding: 1rem 2rem;
 		display: flex;
 		flex-direction: column;
+		transform: translateX(-50%);
 		background-color: var(--primary-200);
 		color: var(--dark-300);
 		font-size: 1.4rem;
-
-		& a {
-			font-weight: bold;
-			text-decoration: underline;
-		}
 	}
 </style>

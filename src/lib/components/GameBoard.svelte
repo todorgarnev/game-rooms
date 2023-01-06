@@ -10,7 +10,7 @@
 	export let winner: string | null;
 	export let myCurrentChoice: GameType | null;
 	export let opponentCurrentChoice: GameType | null;
-	export let myUserId: string;
+	export let myUserId: string | null;
 
 	let userChoice: GameType | null;
 	let showChoices: boolean = true;

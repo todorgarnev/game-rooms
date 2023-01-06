@@ -1,3 +1,3 @@
 import { writable } from "svelte/store";
 
-export const showNewRoom = writable<boolean>(false);
+export const notificationText = writable<string | null>(null);
