@@ -28,8 +28,8 @@
 			There you can start a game against another user. <br />
 			The game is Rock, Paper, Scissors, Lizard, Spock. <br />
 
-			<details on:click={toggleAnimation} on:keydown>
-				<summary>Rules</summary>
+			<details>
+				<summary on:click={toggleAnimation}>Rules</summary>
 
 				{#if animate}
 					<div transition:slide>
