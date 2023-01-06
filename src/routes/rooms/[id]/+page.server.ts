@@ -76,8 +76,8 @@ export const actions: Actions = {
 	start: async ({ locals, params }) => {
 		await locals.sb.from("rooms").update({ is_game_started: true }).eq("id", params.id);
 	},
-	pick: async ({ request, locals, params }) => {
-		const { userChoice } = Object.fromEntries(await request.formData());
+	pick: async ({ url, locals, params }) => {
+		const choice: string | null = url.searchParams.get("choice");
 
 		const { data: allRounds } = await locals.sb
 			.from("rounds")
@@ -96,7 +96,7 @@ export const actions: Actions = {
 				await locals.sb.from("moves").insert({
 					round_id: newRound?.id,
 					user_id: locals.myId as string,
-					user_choice: userChoice
+					user_choice: choice
 				});
 			} else {
 				const lastActiveRound: ServerRound = (allRounds as ServerRound[])[allRounds.length - 1];
@@ -112,7 +112,7 @@ export const actions: Actions = {
 					await locals.sb.from("moves").insert({
 						round_id: newRound?.id,
 						user_id: locals.myId as string,
-						user_choice: userChoice
+						user_choice: choice
 					});
 				} else if (canIMakeMove(lastActiveRound.moves, locals.myId as string)) {
 					await locals.sb
@@ -120,7 +120,7 @@ export const actions: Actions = {
 						.insert({
 							round_id: lastActiveRound.id,
 							user_id: locals.myId,
-							user_choice: userChoice
+							user_choice: choice
 						})
 						.select("round_id(moves(*))");
 

@@ -15,16 +15,17 @@
 	let userChoice: GameType | null;
 	let showChoices: boolean = true;
 
-	const submitFormData: SubmitFunction = ({ data }) => {
-		data.append("userChoice", String(userChoice));
-		showChoices = false;
-	};
-
 	$: userChoice = myCurrentChoice;
 	$: showChoices =
 		currentRound && currentRound.moves.length === 1 && currentRound.moves[0].user_id.id === myUserId
 			? false
 			: true;
+
+	const submitForm: SubmitFunction = ({ action }) => {
+		const choice: string | null = action.searchParams.get("choice");
+		userChoice = choice as GameType;
+		showChoices = false;
+	};
 </script>
 
 {#if winner}
@@ -38,28 +39,28 @@
 	<section class="top-section">
 		<div>
 			{#if showChoices}
-				<form class="choices" action="?/pick" method="POST" use:enhance={submitFormData}>
-					<button type="submit" on:click={() => (userChoice = GameType.Rock)}>
+				<form class="choices" method="POST" use:enhance={submitForm}>
+					<button formaction={`?/pick&choice=${GameType.Rock}`}>
 						<i class="fa fa-hand-rock-o" />
 						<p>Rock</p>
 					</button>
 
-					<button type="submit" on:click={() => (userChoice = GameType.Paper)}>
+					<button formaction={`?/pick&choice=${GameType.Paper}`}>
 						<i class="fa fa-hand-paper-o" />
 						<p>Paper</p>
 					</button>
-<!-- try to user formaction -->
-					<button type="submit" on:click={() => (userChoice = GameType.Scissors)}>
+
+					<button formaction={`?/pick&choice=${GameType.Scissors}`}>
 						<i class="fa fa-hand-scissors-o" />
 						<p>Scissors</p>
 					</button>
 
-					<button type="submit" on:click={() => (userChoice = GameType.Lizard)}>
+					<button formaction={`?/pick&choice=${GameType.Lizard}`}>
 						<i class="fa fa-hand-lizard-o" />
 						<p>Lizard</p>
 					</button>
 
-					<button type="submit" on:click={() => (userChoice = GameType.Spock)}>
+					<button formaction={`?/pick&choice=${GameType.Spock}`}>
 						<i class="fa fa-hand-spock-o" />
 						<p>Spock</p>
 					</button>

@@ -17,6 +17,13 @@
 			invalidateAll();
 		});
 
+		const roomsSb = supabaseClient
+			.channel("public:rooms")
+			.on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, () => {
+				invalidateAll();
+			})
+			.subscribe();
+
 		const roomsUsersSb = supabaseClient
 			.channel("public:rooms_users")
 			.on("postgres_changes", { event: "*", schema: "public", table: "rooms_users" }, (payload) => {
@@ -40,7 +47,6 @@
 		const movesSb = supabaseClient
 			.channel("public:moves")
 			.on("postgres_changes", { event: "INSERT", schema: "public", table: "moves" }, (payload) => {
-				console.log("payload: ", payload);
 				if (payload.eventType === "INSERT" && payload.new.user_id !== data.session?.user.id) {
 					notificationText.set("Player chose a hand in one of your rooms");
 				}
@@ -51,6 +57,7 @@
 
 		return () => {
 			subscription.unsubscribe();
+			roomsSb.unsubscribe();
 			roomsUsersSb.unsubscribe();
 			roundsSb.unsubscribe();
 			movesSb.unsubscribe();
