@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { invalidateAll } from "$app/navigation";
+	import { page } from "$app/stores";
 	import { supabaseClient } from "$lib/supabase/supabase";
 	import { notificationText } from "$lib/stores/notification";
 	import Notification from "$lib/components/Notification.svelte";
@@ -47,7 +48,11 @@
 		const movesSb = supabaseClient
 			.channel("public:moves")
 			.on("postgres_changes", { event: "INSERT", schema: "public", table: "moves" }, (payload) => {
-				if (payload.eventType === "INSERT" && payload.new.user_id !== data.session?.user.id) {
+				if (
+					payload.eventType === "INSERT" &&
+					payload.new.user_id !== data.session?.user.id &&
+					!$page.url.pathname.startsWith("/rooms/")
+				) {
 					notificationText.set("Player chose a hand in one of your rooms");
 				}
 

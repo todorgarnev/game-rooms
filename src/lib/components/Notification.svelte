@@ -20,7 +20,7 @@
 	.notification {
 		position: fixed;
 		left: 50%;
-		top: 5rem;
+		top: 1rem;
 		padding: 1rem 2rem;
 		display: flex;
 		flex-direction: column;
