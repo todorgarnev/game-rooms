@@ -5,7 +5,7 @@
 
 ### Description
 
-A web app with login/registration flow which includes an expansion of the game Rock, Paper, Scissors.
+A web app with login/registration flow which includes an expansion of the game Rock, Paper, Scissors.   
 What you can do:
 
 1. Login/register an user.
