@@ -5,7 +5,7 @@
 
 ### Description
 
-A web app with login/registration flow which includes an expansion of the game Rock, Paper, Scissors.   
+A web app with login/registration flow which includes an expansion of the game Rock, Paper, Scissors.
 What you can do:
 
 1. Login/register an user.
@@ -16,17 +16,17 @@ What you can do:
 
 To run the app, follow these steps.
 
-1. Ensure that latest [NodeJS](http://nodejs.org/) version is installed.
-2. Install [npm](https://www.npmjs.com/).
+1. Ensure that latest [NodeJS](http://nodejs.org/) is installed.
+2. Install [pnpm](https://pnpm.io/installation).
 3. From the project folder, execute the following commands:
 
 To install dependencies:
 ```shell
-  npm i
+  pnpm install
 ```
 To run the client app:
 
 ```shell
-  npm run dev
+  pnpm run dev
 ```
 Browse to [http://localhost:5173](http://localhost:5173) and see the running app.
