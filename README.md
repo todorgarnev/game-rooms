@@ -16,7 +16,7 @@ What you can do:
 
 To run the app, follow these steps.
 
-1. Ensure that [NodeJS](http://nodejs.org/) is installed.
+1. Ensure that latest [NodeJS](http://nodejs.org/) version is installed.
 2. Install [npm](https://www.npmjs.com/).
 3. From the project folder, execute the following commands:
 
@@ -29,4 +29,4 @@ To run the client app:
 ```shell
   npm run dev
 ```
-Browse to [http://http://localhost:5173](http://http://localhost:5173) and see the running app.
+Browse to [http://localhost:5173](http://localhost:5173) and see the running app.
