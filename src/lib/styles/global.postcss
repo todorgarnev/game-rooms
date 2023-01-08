@@ -1,6 +1,10 @@
 @import "reset.postcss";
 @import url("https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
 
+@custom-media --medium-viewport (width < 1100px);
+@custom-media --small-viewport (width < 900px);
+@custom-media --smallest-viewport (width < 650px);
+
 :root {
 	--dark-300: hsl(213, 24%, 7%);
 	--dark-200: hsl(222, 15%, 13%);

@@ -11,7 +11,7 @@
 </svelte:head>
 
 <section class="header-section">
-	<div>
+	<div class="general-info">
 		<h3>Room name: <span>{data.name}</span></h3>
 		<h3>Users: <span>{data.usernames.length > 0 ? data.usernames : "no users"}</span></h3>
 	</div>
@@ -35,8 +35,6 @@
 			</form>
 		{/if}
 	</div>
-
-	<!-- <h3>Current score:{}/{}</h3> -->
 </section>
 
 {#if data.isGameStarted}
@@ -69,6 +67,15 @@
 
 		& .start-game {
 			margin-top: 1rem;
+		}
+
+		@media --smallest-viewport {
+			margin-bottom: 0;
+			flex-direction: column;
+
+			& .general-info {
+				margin-bottom: 2rem;
+			}
 		}
 	}
 </style>

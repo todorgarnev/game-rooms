@@ -181,15 +181,6 @@
 				color: var(--secondary-300);
 				border-color: var(--secondary-300);
 			}
-
-			/* & .icon-option-selected {
-				font-size: 60px;
-				color: #f1c40f;
-				border-radius: 100px;
-				border: 6px solid #f1c40f;
-				cursor: pointer;
-				padding: 20px;
-			} */
 		}
 
 		& .current-score {
@@ -249,5 +240,69 @@
 
 	.tie {
 		color: dodgerblue;
+	}
+
+	@media --small-viewport {
+		.top-section {
+			margin-bottom: 2rem;
+			grid-template-columns: 1fr;
+
+			& .choices button {
+				margin-top: 2rem;
+				font-size: 1.8rem;
+
+				& .result {
+					font-size: 3.2rem;
+				}
+			}
+		}
+	}
+
+	@media --smallest-viewport {
+		.top-section {
+			& .choices button {
+				margin-bottom: 1rem;
+
+				&:not(:last-child) {
+					margin-right: 1rem;
+				}
+
+				& i {
+					padding: 1rem;
+					font-size: 4rem;
+					border-width: 0.4rem;
+				}
+
+				& p {
+					margin-top: 0.5rem;
+					font-size: 1.4rem;
+				}
+			}
+
+			& .current-score {
+				margin-top: 1rem;
+				font-size: 2rem;
+
+				& .result {
+					font-size: 3.2rem;
+				}
+			}
+		}
+
+		.main-section {
+			margin-bottom: 2rem;
+			grid-template-columns: 1fr;
+
+			& div {
+				font-size: 3rem;
+			}
+		}
+
+		.bottom-section {
+			& .round-info {
+				grid-template-columns: 1fr;
+				gap: 1rem;
+			}
+		}
 	}
 </style>
