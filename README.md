@@ -12,6 +12,11 @@ What you can do:
 2. Create/join/leave a gaming room.
 3. Play a game against another user.
 
+### Technologies
+1. SvelteKit
+2. Supabase
+3. PostCss
+
 ### Running The App locally
 
 To run the app, follow these steps.
